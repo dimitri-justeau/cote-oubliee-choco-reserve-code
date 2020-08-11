@@ -48,19 +48,40 @@ public class MaximizeNbEdges {
 
         solverBorendy.setSearch(Search.minDomUBSearch(problemBorendy.reserveModel.getSites()));
 
-        Map<Integer, Integer> borendyFront = new HashMap<>();
-
         System.out.println("Nb Edges initial = " + nbEdgesForest);
 
-        for (int a = 90; a <= 110; a++) {
-            Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
-            modelBorendy.post(area);
-            Solution s = solverBorendy.findOptimalSolution(nbEdgesBorendy,true);
-            borendyFront.put(s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(nbEdgesBorendy));
-            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(nbEdgesBorendy)}));
-            modelBorendy.unpost(area);
-            solverBorendy.reset();
-        }
+        Map<Integer, Integer> borendyFront = new HashMap<>();
+        borendyFront.put(90, 6349);
+        borendyFront.put(91,6349);
+        borendyFront.put(92,6349);
+        borendyFront.put(93,6348);
+        borendyFront.put(94,6348);
+        borendyFront.put(95,6351);
+        borendyFront.put(96,6351);
+        borendyFront.put(97,6351);
+        borendyFront.put(98,6349);
+        borendyFront.put(99,6351);
+        borendyFront.put(100,6352);
+        borendyFront.put(101,6352);
+        borendyFront.put(102,6353);
+        borendyFront.put(103,6351);
+        borendyFront.put(104,6351);
+        borendyFront.put(105,6352);
+        borendyFront.put(106,6354);
+        borendyFront.put(107,6355);
+        borendyFront.put(108,6354);
+        borendyFront.put(109,6352);
+        borendyFront.put(110,6352);
+
+//        for (int a = 90; a <= 110; a++) {
+//            Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
+//            modelBorendy.post(area);
+//            Solution s = solverBorendy.findOptimalSolution(nbEdgesBorendy,true);
+//            borendyFront.put(s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(nbEdgesBorendy));
+//            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(nbEdgesBorendy)}));
+//            modelBorendy.unpost(area);
+//            solverBorendy.reset();
+//        }
 
         System.out.println("minArea,nbEdges");
         int[] keysBorendy = borendyFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
@@ -84,15 +105,37 @@ public class MaximizeNbEdges {
         solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
-        for (int a = 90; a <= 110; a++) {
-            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
-            modelUnia.post(area);
-            Solution s = solverUnia.findOptimalSolution(nbEdgesUnia,true);
-            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(nbEdgesUnia));
-            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(nbEdgesUnia)}));
-            modelUnia.unpost(area);
-            solverUnia.reset();
-        }
+        uniaFront.put(90, 6347);
+        uniaFront.put(91,6346);
+        uniaFront.put(92,6347);
+        uniaFront.put(93,6347);
+        uniaFront.put(94,6347);
+        uniaFront.put(95,6350);
+        uniaFront.put(96, 6345);
+        uniaFront.put(97,6346);
+        uniaFront.put(98,6346);
+        uniaFront.put(99,6346);
+        uniaFront.put(100,6346);
+        uniaFront.put(101,6348);
+        uniaFront.put(102,6349);
+        uniaFront.put(103,6348);
+        uniaFront.put(104,6349);
+        uniaFront.put(105,6348);
+        uniaFront.put(106,6349);
+        uniaFront.put(107,6349);
+        uniaFront.put(108,6348);
+        uniaFront.put(109,6352);
+        uniaFront.put(110,6342);
+
+//        for (int a = 90; a <= 110; a++) {
+//            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
+//            modelUnia.post(area);
+//            Solution s = solverUnia.findOptimalSolution(nbEdgesUnia,true);
+//            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(nbEdgesUnia));
+//            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(nbEdgesUnia)}));
+//            modelUnia.unpost(area);
+//            solverUnia.reset();
+//        }
 
         System.out.println("minArea,nbEdges");
         int[] keysUnia = uniaFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
@@ -113,8 +156,8 @@ public class MaximizeNbEdges {
         int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)).toArray();
         int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)).toArray();
 
-        IntVar valBorendy = model.intVar("nbEdgesBorendy",0, 5000);
-        IntVar valUnia = model.intVar("nbEdgesUnia",0, 5000);
+        IntVar valBorendy = model.intVar("nbEdgesBorendy",0, 10000);
+        IntVar valUnia = model.intVar("nbEdgesUnia",0, 10000);
 
         model.element(areaBorendy, areas, indexBorendy).post();
         model.element(areaUnia, areas, indexUnia).post();
