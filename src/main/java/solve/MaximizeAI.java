@@ -32,7 +32,7 @@ public class MaximizeAI {
 
         Model modelBorendy = problemBorendy.reserveModel.getChocoModel();
 
-        IntVar AI_Borendy = problemBorendy.reserveModel.aggregationIndex(problemBorendy.potentialForest, 3);
+        IntVar AI_Borendy = problemBorendy.reserveModel.aggregationIndex(problemBorendy.potentialForest, 4);
 
         double AI_initial_Borendy = FragmentationIndices.aggregationIndex(problemBorendy.potentialForestGraphVar.getGLB());
         int nbEdges_initial = FragmentationIndices.getNbEdges(problemBorendy.potentialForestGraphVar.getGLB());
@@ -95,7 +95,7 @@ public class MaximizeAI {
 
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
 
-        IntVar AI_Unia = problemBorendy.reserveModel.aggregationIndex(problemUnia.potentialForest, 3);
+        IntVar AI_Unia = problemUnia.reserveModel.aggregationIndex(problemUnia.potentialForest, 4);
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
 
