@@ -33,7 +33,7 @@ public class MaximizeAIBoth {
 
         Solver solver = problem.reserveModel.getChocoModel().getSolver();
 
-        solver.setSearch(Search.minDomUBSearch(problem.reserveModel.getSites()));
+        solver.setSearch(Search.activityBasedSearch(problem.reserveModel.getSites()));
 
         solver.showStatistics();
 
