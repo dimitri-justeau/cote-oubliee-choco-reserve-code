@@ -159,8 +159,8 @@ public class MaximizeAI {
         int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)[0]).toArray();
         int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)[0]).toArray();
 
-        IntVar valBorendy = model.intVar("AI_Borendy",0, 1000);
-        IntVar valUnia = model.intVar("AI_Unia",0, 1000);
+        IntVar valBorendy = model.intVar("AI_Borendy",0, 10000);
+        IntVar valUnia = model.intVar("AI_Unia",0, 10000);
 
         model.element(areaBorendy, areas, indexBorendy).post();
         model.element(areaUnia, areas, indexUnia).post();
@@ -169,7 +169,7 @@ public class MaximizeAI {
 
         model.arithm(areaBorendy, "+", areaUnia, "<=", 200).post();
 
-        IntVar total = model.intVar("sumAI", 0, 2000);
+        IntVar total = model.intVar("sumAI", 0, 20000);
         model.arithm(valBorendy, "+", valUnia, "=", total).post();
 
         List<Integer[]> optimalAllocations = new ArrayList<>();
