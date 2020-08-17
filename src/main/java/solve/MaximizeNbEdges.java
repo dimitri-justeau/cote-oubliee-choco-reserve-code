@@ -269,11 +269,12 @@ public class MaximizeNbEdges {
         // Export occurrences count
         double[] completeOccurrences = new double[problemBorendy.grid.getNbCols() * problemBorendy.grid.getNbRows()];
         for (int j = 0; j < completeOccurrences.length; j++) {
-            if (problemBorendy.grid.getDiscardSet().contains(j)) {
-                completeOccurrences[j] = 0;
-            } else {
-                completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[problemBorendy.grid.getPartialIndex(j)] / nbOptimalSolutions;
-            }
+            completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[j] / nbOptimalSolutions;
+//            if (problemBorendy.grid.getDiscardSet().contains(j)) {
+//                completeOccurrences[j] = 0;
+//            } else {
+//                completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[problemBorendy.grid.getPartialIndex(j)] / nbOptimalSolutions;
+//            }
         }
 
         try {

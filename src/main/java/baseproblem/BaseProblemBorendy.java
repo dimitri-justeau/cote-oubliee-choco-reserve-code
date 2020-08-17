@@ -2,6 +2,7 @@ package baseproblem;
 
 import chocoreserve.grid.neighborhood.Neighborhoods;
 import chocoreserve.grid.regular.square.PartialRegularSquareGrid;
+import chocoreserve.grid.regular.square.RegularSquareGrid;
 import chocoreserve.solver.ReserveModel;
 import chocoreserve.solver.region.ComposedRegion;
 import chocoreserve.solver.region.Region;
@@ -20,7 +21,7 @@ public class BaseProblemBorendy {
     public String name;
     public Data data;
     public String resultsPath;
-    public PartialRegularSquareGrid grid;
+    public RegularSquareGrid grid;
     public SpatialGraphVar potentialForestGraphVar;
     public ReserveModel reserveModel;
 
@@ -46,40 +47,40 @@ public class BaseProblemBorendy {
                 .filter(i -> data.forest_binary_data[i] <= -1)
                 .toArray();
 
-        this.grid = new PartialRegularSquareGrid(data.height, data.width, outPixels);
+        this.grid = new RegularSquareGrid(data.height, data.width);
 
         int[] nonForestPixels = IntStream.range(0, data.forest_binary_data.length)
                 .filter(i -> data.forest_binary_data[i] == 0)
-                .map(i -> grid.getPartialIndex(i))
+//                .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
         int[] forestPixels = IntStream.range(0, data.forest_binary_data.length)
                 .filter(i -> data.forest_binary_data[i] == 1)
-                .map(i -> grid.getPartialIndex(i))
+//                .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
-        int[] restorableAreaPixels = IntStream.of(nonForestPixels)
-                .map(i -> data.restorable_area_data[grid.getCompleteIndex(i)])
-                .toArray();
+//        int[] restorableAreaPixels = IntStream.of(nonForestPixels)
+//                .map(i -> data.restorable_area_data[grid.getCompleteIndex(i)])
+//                .toArray();
 
         int[] nonForestBufferUniaPixels = IntStream.range(0, data.buffer_data.length)
                 .filter(i -> data.buffer_data[i] == Data.UNIA_RASTER_VALUE && data.forest_binary_data[i] == 0)
-                .map(i -> grid.getPartialIndex(i))
+//                .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
         int[] nonForestBufferBorendyPixels = IntStream.range(0, data.buffer_data.length)
                 .filter(i -> data.buffer_data[i] == Data.BORENDY_RASTER_VALUE && data.forest_binary_data[i] == 0)
-                .map(i -> grid.getPartialIndex(i))
+//                .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
         int[] nonForestBufferPixels = IntStream.range(0, data.buffer_data.length)
                 .filter(i -> (data.buffer_data[i] == Data.UNIA_RASTER_VALUE || data.buffer_data[i] == Data.BORENDY_RASTER_VALUE) && data.forest_binary_data[i] == 0)
-                .map(i -> grid.getPartialIndex(i))
+//                .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
         int[] nonForestNonBufferPixels = IntStream.range(0, data.forest_binary_data.length)
                 .filter(i -> data.forest_binary_data[i] == 0 && data.buffer_data[i] <= 0)
-                .map(i -> grid.getPartialIndex(i))
+//                .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
         System.out.println("Current landscape state loaded");
@@ -91,30 +92,30 @@ public class BaseProblemBorendy {
 
         forest = new Region(
                 "forest",
-                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
+                Neighborhoods.FOUR_CONNECTED,
+                SetType.SMALLBIPARTITESET,
                 forestPixels,
                 forestPixels
         );
         nonForest = new Region(
                 "nonForest",
-                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
+                Neighborhoods.FOUR_CONNECTED,
+                SetType.SMALLBIPARTITESET,
                 nonForestNonBufferPixels,
                 nonForestPixels
         );
         reforestUnia = new Region(
                 "reforest",
-                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
+                Neighborhoods.FOUR_CONNECTED,
+                SetType.SMALLBIPARTITESET,
                 new int[] {},
                 nonForestBufferUniaPixels
         );
 
         reforestBorendy = new Region(
                 "reforest",
-                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
+                Neighborhoods.FOUR_CONNECTED,
+                SetType.SMALLBIPARTITESET,
                 new int[] {},
                 nonForestBufferBorendyPixels
         );
@@ -142,7 +143,8 @@ public class BaseProblemBorendy {
         int[] minArea = new int[nbSites];
         int[] maxRestorableArea = new int[nbSites];
         for (int i = 0; i < nbSites; i++) {
-            int restorable = data.restorable_area_data[grid.getCompleteIndex(i)];
+//            int restorable = data.restorable_area_data[grid.getCompleteIndex(i)];
+            int restorable = data.restorable_area_data[i];
             minArea[i] = restorable <= 7 ? 0 : restorable - 7;
             maxRestorableArea[i] = restorable;
         }
