@@ -93,7 +93,7 @@ public class MaximizeMESH {
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
 
-        solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
+        solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer[]> uniaFront = new HashMap<>();
 //        uniaFront.put(90, 6347);

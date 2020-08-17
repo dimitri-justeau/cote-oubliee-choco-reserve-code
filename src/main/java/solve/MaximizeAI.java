@@ -103,7 +103,7 @@ public class MaximizeAI {
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
 
-        solverUnia.setSearch(Search.domOverWDegSearch(problemUnia.reserveModel.getSites()));
+        solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer[]> uniaFront = new HashMap<>();
 //        uniaFront.put(90, 6347);
