@@ -34,6 +34,8 @@ public class MaximizeAI {
 
         IntVar AI_Borendy = problemBorendy.reserveModel.aggregationIndex(problemBorendy.potentialForest, 4);
 
+        IntVar nbEdgesBorendy = problemBorendy.reserveModel.nbEdgesVar(problemBorendy.potentialForest);
+
         double AI_initial_Borendy = FragmentationIndices.aggregationIndex(problemBorendy.potentialForestGraphVar.getGLB());
         int nbEdges_initial = FragmentationIndices.getNbEdges(problemBorendy.potentialForestGraphVar.getGLB());
         int nbNodes_initial = problemBorendy.potentialForestGraphVar.getLB().size();
@@ -75,7 +77,7 @@ public class MaximizeAI {
                     s.getIntVal(problemBorendy.minReforestAreaBorendy),
                     new Integer[] {
                             s.getIntVal(AI_Borendy),
-                            FragmentationIndices.getNbEdges(problemBorendy.potentialForestGraphVar.getGLB()),
+                            s.getIntVal(nbEdgesBorendy),
                             s.getIntVal(problemBorendy.potentialForest.getNbSites())
                     }
             );
@@ -96,6 +98,8 @@ public class MaximizeAI {
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
 
         IntVar AI_Unia = problemUnia.reserveModel.aggregationIndex(problemUnia.potentialForest, 4);
+
+        IntVar nbEdgesUnia = problemUnia.reserveModel.nbEdgesVar(problemUnia.potentialForest);
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
 
@@ -131,7 +135,7 @@ public class MaximizeAI {
             uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia),
                     new Integer[] {
                         s.getIntVal(AI_Unia),
-                        FragmentationIndices.getNbEdges(problemUnia.potentialForestGraphVar.getGLB()),
+                        s.getIntVal(nbEdgesUnia),
                         s.getIntVal(problemUnia.potentialForest.getNbSites())
                     }
             );
