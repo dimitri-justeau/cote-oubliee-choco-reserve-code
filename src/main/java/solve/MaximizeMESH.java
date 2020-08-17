@@ -30,7 +30,7 @@ public class MaximizeMESH {
 
         Model modelBorendy = problemBorendy.reserveModel.getChocoModel();
 
-        IntVar MESH_Borendy = problemBorendy.reserveModel.effectiveMeshSize(problemBorendy.potentialForest, 4);
+        IntVar MESH_Borendy = problemBorendy.reserveModel.effectiveMeshSize(problemBorendy.potentialForest, 2);
 
         double MESH_initial_Borendy = FragmentationIndices.effectiveMeshSize(problemBorendy.potentialForestGraphVar.getGLB(), problemBorendy.grid.getNbCells());
 
@@ -89,7 +89,7 @@ public class MaximizeMESH {
 
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
 
-        IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, 4);
+        IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, 2);
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
 
@@ -151,8 +151,8 @@ public class MaximizeMESH {
         int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)[0]).toArray();
         int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)[0]).toArray();
 
-        IntVar valBorendy = model.intVar("MESH_Borendy",0, 100000);
-        IntVar valUnia = model.intVar("MESH_Unia",0, 100000);
+        IntVar valBorendy = model.intVar("MESH_Borendy",0, 1000);
+        IntVar valUnia = model.intVar("MESH_Unia",0, 1000);
 
         model.element(areaBorendy, areas, indexBorendy).post();
         model.element(areaUnia, areas, indexUnia).post();
@@ -161,7 +161,7 @@ public class MaximizeMESH {
 
         model.arithm(areaBorendy, "+", areaUnia, "<=", 200).post();
 
-        IntVar total = model.intVar("sumMESH", 0, 200000);
+        IntVar total = model.intVar("sumMESH", 0, 2000);
         model.arithm(valBorendy, "+", valUnia, "=", total).post();
 
         List<Integer[]> optimalAllocations = new ArrayList<>();
