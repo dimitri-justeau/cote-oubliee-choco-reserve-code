@@ -35,7 +35,7 @@ public class MaximizeIIC {
         IntVar IIC_Borendy = problemBorendy.reserveModel.integralIndexOfConnectivity(
                 problemBorendy.potentialForest,
                 Neighborhoods.TWO_WIDE_FOUR_CONNECTED,
-                2
+                5
         );
 
         double IIC_initial_Borendy = ConnectivityIndices.getIIC(
@@ -102,7 +102,7 @@ public class MaximizeIIC {
         IntVar IIC_Unia = problemUnia.reserveModel.integralIndexOfConnectivity(
                 problemUnia.potentialForest,
                 Neighborhoods.TWO_WIDE_FOUR_CONNECTED,
-                2
+                5
         );
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
