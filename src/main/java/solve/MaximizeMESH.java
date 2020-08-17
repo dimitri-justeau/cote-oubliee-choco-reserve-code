@@ -95,38 +95,34 @@ public class MaximizeMESH {
 
         solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
 
-        Map<Integer, Integer[]> uniaFront = new HashMap<>();
-//        uniaFront.put(90, 6347);
-//        uniaFront.put(91,6346);
-//        uniaFront.put(92,6347);
-//        uniaFront.put(93,6347);
-//        uniaFront.put(94,6347);
-//        uniaFront.put(95,6350);
-//        uniaFront.put(96, 6345);
-//        uniaFront.put(97,6346);
-//        uniaFront.put(98,6346);
-//        uniaFront.put(99,6346);
-//        uniaFront.put(100,6346);
-//        uniaFront.put(101,6348);
-//        uniaFront.put(102,6349);
-//        uniaFront.put(103,6348);
-//        uniaFront.put(104,6349);
-//        uniaFront.put(105,6348);
-//        uniaFront.put(106,6349);
-//        uniaFront.put(107,6349);
-//        uniaFront.put(108,6348);
-//        uniaFront.put(109,6352);
-//        uniaFront.put(110,6342);
+        Map<Integer, Integer> uniaFront = new HashMap<>();
+        uniaFront.put(90, 35100);
+        uniaFront.put(91,35126);
+        uniaFront.put(92,35100);
+        uniaFront.put(93,35126);
+        uniaFront.put(94,35100);
+        uniaFront.put(95,35100);
+        uniaFront.put(96, 35126);
+        uniaFront.put(97,35126);
+        uniaFront.put(98,35100);
+        uniaFront.put(99,35126);
+        uniaFront.put(100,35126);
+        uniaFront.put(101,35152);
+        uniaFront.put(102,35126);
+        uniaFront.put(103,35126);
+        uniaFront.put(104,35126);
+        uniaFront.put(105,35152);
+        uniaFront.put(106,35152);
+        uniaFront.put(107,35126);
+        uniaFront.put(108,35152);
+        uniaFront.put(109,35152);
+        uniaFront.put(110,35152);
 
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
             modelUnia.post(area);
             Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
-            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia),
-                    new Integer[] {
-                        s.getIntVal(MESH_Unia)
-                    }
-            );
+            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
             System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia)}));
             modelUnia.unpost(area);
             solverUnia.reset();
@@ -135,7 +131,7 @@ public class MaximizeMESH {
         System.out.println("minArea,MESH");
         int[] keysUnia = uniaFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
         for (int x : keysUnia) {
-            System.out.println(x + "," + uniaFront.get(x)[0]);
+            System.out.println(x + "," + uniaFront.get(x));
         }
 
         // Combine //
@@ -149,7 +145,7 @@ public class MaximizeMESH {
 
         int[] areas = IntStream.range(90, 111).toArray();
         int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)[0]).toArray();
-        int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)[0]).toArray();
+        int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)).toArray();
 
         IntVar valBorendy = model.intVar("MESH_Borendy",0, 1000);
         IntVar valUnia = model.intVar("MESH_Unia",0, 1000);
