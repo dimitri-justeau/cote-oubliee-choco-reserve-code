@@ -34,14 +34,14 @@ public class MaximizeIIC {
 
         IntVar IIC_Borendy = problemBorendy.reserveModel.integralIndexOfConnectivity(
                 problemBorendy.potentialForest,
-                Neighborhoods.TWO_WIDE_FOUR_CONNECTED,
+                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
                 5
         );
 
         double IIC_initial_Borendy = ConnectivityIndices.getIIC(
                 problemBorendy.potentialForestGraphVar.getGLB(),
                 problemBorendy.grid,
-                Neighborhoods.TWO_WIDE_FOUR_CONNECTED
+                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED
         );
 
         Solver solverBorendy = problemBorendy.reserveModel.getChocoModel().getSolver();
@@ -101,7 +101,7 @@ public class MaximizeIIC {
 
         IntVar IIC_Unia = problemUnia.reserveModel.integralIndexOfConnectivity(
                 problemUnia.potentialForest,
-                Neighborhoods.TWO_WIDE_FOUR_CONNECTED,
+                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
                 5
         );
 
@@ -182,11 +182,6 @@ public class MaximizeIIC {
             System.out.println("IIC Borendy = " + valBorendy.getValue());
             System.out.println("Area Unia = " + areaUnia.getValue());
             System.out.println("IIC Unia = " + valUnia.getValue());
-//            int nbNodes = borendyFront.get(areaBorendy.getValue())[2] + uniaFront.get(areaUnia.getValue())[2];
-//            nbNodes -= nbNodes_initial;
-//            int nbEdges = borendyFront.get(areaBorendy.getValue())[1] + uniaFront.get(areaUnia.getValue())[1];
-//            nbEdges -= nbEdges_initial;
-//            System.out.println("Total AI = " + FragmentationIndices.aggregationIndex(nbNodes, nbEdges));
         });
         solver.showStatistics();
         List<Solution> allocs = solver.findAllOptimalSolutions(total, true);
@@ -278,12 +273,12 @@ public class MaximizeIIC {
         // Export occurrences count
         double[] completeOccurrences = new double[problemBorendy.grid.getNbCols() * problemBorendy.grid.getNbRows()];
         for (int j = 0; j < completeOccurrences.length; j++) {
-            completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[j] / nbOptimalSolutions;
-//            if (problemBorendy.grid.getDiscardSet().contains(j)) {
-//                completeOccurrences[j] = 0;
-//            } else {
-//                completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[problemBorendy.grid.getPartialIndex(j)] / nbOptimalSolutions;
-//            }
+//            completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[j] / nbOptimalSolutions;
+            if (problemBorendy.grid.getDiscardSet().contains(j)) {
+                completeOccurrences[j] = 0;
+            } else {
+                completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[problemBorendy.grid.getPartialIndex(j)] / nbOptimalSolutions;
+            }
         }
 
         try {

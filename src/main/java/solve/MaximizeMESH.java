@@ -96,37 +96,37 @@ public class MaximizeMESH {
         solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
-        uniaFront.put(90, 35100);
-        uniaFront.put(91,35126);
-        uniaFront.put(92,35100);
-        uniaFront.put(93,35126);
-        uniaFront.put(94,35100);
-        uniaFront.put(95,35100);
-        uniaFront.put(96, 35126);
-        uniaFront.put(97,35126);
-        uniaFront.put(98,35100);
-        uniaFront.put(99,35126);
-        uniaFront.put(100,35126);
-        uniaFront.put(101,35152);
-        uniaFront.put(102,35126);
-        uniaFront.put(103,35126);
-        uniaFront.put(104,35126);
-        uniaFront.put(105,35152);
-        uniaFront.put(106,35152);
-        uniaFront.put(107,35126);
-        uniaFront.put(108,35152);
-        uniaFront.put(109,35152);
-        uniaFront.put(110,35152);
+//        uniaFront.put(90, 35100);
+//        uniaFront.put(91,35126);
+//        uniaFront.put(92,35100);
+//        uniaFront.put(93,35126);
+//        uniaFront.put(94,35100);
+//        uniaFront.put(95,35100);
+//        uniaFront.put(96, 35126);
+//        uniaFront.put(97,35126);
+//        uniaFront.put(98,35100);
+//        uniaFront.put(99,35126);
+//        uniaFront.put(100,35126);
+//        uniaFront.put(101,35152);
+//        uniaFront.put(102,35126);
+//        uniaFront.put(103,35126);
+//        uniaFront.put(104,35126);
+//        uniaFront.put(105,35152);
+//        uniaFront.put(106,35152);
+//        uniaFront.put(107,35126);
+//        uniaFront.put(108,35152);
+//        uniaFront.put(109,35152);
+//        uniaFront.put(110,35152);
 
-//        for (int a = 90; a <= 110; a++) {
-//            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
-//            modelUnia.post(area);
-//            Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
-//            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
-//            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia)}));
-//            modelUnia.unpost(area);
-//            solverUnia.reset();
-//        }
+        for (int a = 90; a <= 110; a++) {
+            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
+            modelUnia.post(area);
+            Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
+            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
+            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia)}));
+            modelUnia.unpost(area);
+            solverUnia.reset();
+        }
 
         System.out.println("minArea,MESH");
         int[] keysUnia = uniaFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
@@ -168,11 +168,6 @@ public class MaximizeMESH {
             System.out.println("MESH Borendy = " + valBorendy.getValue());
             System.out.println("Area Unia = " + areaUnia.getValue());
             System.out.println("MESH Unia = " + valUnia.getValue());
-//            int nbNodes = borendyFront.get(areaBorendy.getValue())[2] + uniaFront.get(areaUnia.getValue())[2];
-//            nbNodes -= nbNodes_initial;
-//            int nbEdges = borendyFront.get(areaBorendy.getValue())[1] + uniaFront.get(areaUnia.getValue())[1];
-//            nbEdges -= nbEdges_initial;
-//            System.out.println("Total AI = " + FragmentationIndices.aggregationIndex(nbNodes, nbEdges));
         });
         solver.showStatistics();
         List<Solution> allocs = solver.findAllOptimalSolutions(total, true);
@@ -265,11 +260,11 @@ public class MaximizeMESH {
         double[] completeOccurrences = new double[problemBorendy.grid.getNbCols() * problemBorendy.grid.getNbRows()];
         for (int j = 0; j < completeOccurrences.length; j++) {
             completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[j] / nbOptimalSolutions;
-//            if (problemBorendy.grid.getDiscardSet().contains(j)) {
-//                completeOccurrences[j] = 0;
-//            } else {
-//                completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[problemBorendy.grid.getPartialIndex(j)] / nbOptimalSolutions;
-//            }
+            if (problemBorendy.grid.getDiscardSet().contains(j)) {
+                completeOccurrences[j] = 0;
+            } else {
+                completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[problemBorendy.grid.getPartialIndex(j)] / nbOptimalSolutions;
+            }
         }
 
         try {

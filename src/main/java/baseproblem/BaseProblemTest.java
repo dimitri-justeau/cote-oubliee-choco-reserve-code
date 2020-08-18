@@ -8,6 +8,7 @@ import chocoreserve.solver.region.Region;
 import chocoreserve.solver.variable.SpatialGraphVar;
 import org.chocosolver.graphsolver.GraphModel;
 import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.SetVar;
 import org.chocosolver.util.objects.setDataStructures.SetType;
 
 import java.io.*;
@@ -15,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-public class BaseProblemUnia {
+public class BaseProblemTest {
 
     public String name;
     public Data data;
@@ -27,9 +28,9 @@ public class BaseProblemUnia {
     public Region nonForest, forest, reforestUnia, reforestBorendy;
     public ComposedRegion potentialForest;
 
-    public IntVar minReforestAreaUnia, maxReforestAreaUnia;
+    public IntVar  minReforestAreaBorendy,maxReforestAreaBorendy;
 
-    public BaseProblemUnia(String name) throws IOException {
+    public BaseProblemTest(String name) throws IOException {
         this.name = name;
         this.data = new Data();
         File f = new File(this.getClass().getResource("../results").getPath() + "/" + name);
@@ -68,6 +69,11 @@ public class BaseProblemUnia {
                 .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
+        int[] nonForestBufferPixels = IntStream.range(0, data.buffer_data.length)
+                .filter(i -> data.buffer_data[i] > 0 && data.forest_binary_data[i] == 0)
+                .map(i -> grid.getPartialIndex(i))
+                .toArray();
+
         int[] nonForestNonBufferPixels = IntStream.range(0, data.forest_binary_data.length)
                 .filter(i -> data.forest_binary_data[i] == 0 && data.buffer_data[i] <= 0)
                 .map(i -> grid.getPartialIndex(i))
@@ -83,40 +89,33 @@ public class BaseProblemUnia {
         forest = new Region(
                 "forest",
                 Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
+                SetType.SMALLBIPARTITESET,
                 forestPixels,
                 forestPixels
         );
         nonForest = new Region(
                 "nonForest",
                 Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
+                SetType.SMALLBIPARTITESET,
                 nonForestNonBufferPixels,
                 nonForestPixels
-        );
-        reforestUnia = new Region(
-                "reforest",
-                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
-                new int[] {},
-                nonForestBufferUniaPixels
         );
 
         reforestBorendy = new Region(
                 "reforest",
                 Neighborhoods.PARTIAL_FOUR_CONNECTED,
-                SetType.BIPARTITESET,
+                SetType.SMALLBIPARTITESET,
                 new int[] {},
-                nonForestBufferBorendyPixels
+                nonForestBufferPixels
         );
 
-        potentialForest = new ComposedRegion("potentialForest", forest, reforestUnia);
+        potentialForest = new ComposedRegion("potentialForest", forest, reforestBorendy);
 
         System.out.println("Regions created");
 
         this.reserveModel = new ReserveModel(
                 grid,
-                new Region[] {nonForest, forest, reforestUnia},
+                new Region[] {nonForest, forest, reforestBorendy},
                 new ComposedRegion[] {potentialForest}
         );
 
@@ -124,28 +123,40 @@ public class BaseProblemUnia {
 
         GraphModel model = reserveModel.getChocoModel();
 
+        SetVar bufferBorendy = model.setVar(nonForestBufferBorendyPixels);
+        SetVar bufferUnia = model.setVar(nonForestBufferUniaPixels);
+        SetVar interBuffBorendy = model.setVar(new int[] {}, nonForestBufferBorendyPixels);
+        SetVar interBuffUnia = model.setVar(new int[] {}, nonForestBufferUniaPixels);
+
+        model.intersection(new SetVar[] {reforestBorendy.getSetVar(), bufferBorendy}, interBuffBorendy).post();
+        model.intersection(new SetVar[] {reforestBorendy.getSetVar(), bufferUnia}, interBuffUnia).post();
+
+        model.notEmpty(interBuffBorendy).post();
+        model.notEmpty(interBuffUnia).post();
+
         potentialForestGraphVar = potentialForest.getSetVar();
 
         // Connectivity constraints on reforest regions
-        reserveModel.nbConnectedComponents(reforestUnia, 1, 1).post();
+        reserveModel.nbConnectedComponents(reforestBorendy, 2, 2).post();
 
         // Minimum area to ensure every site to >= 0.7 forest proportion (in ha)
         int[] minArea = new int[nbSites];
         int[] maxRestorableArea = new int[nbSites];
         for (int i = 0; i < nbSites; i++) {
             int restorable = data.restorable_area_data[grid.getCompleteIndex(i)];
+//            int restorable = data.restorable_area_data[i];
             minArea[i] = restorable <= 7 ? 0 : restorable - 7;
             maxRestorableArea[i] = restorable;
         }
 
-        // Unia restorable area constraint
-        minReforestAreaUnia = model.intVar(90, 110);
-        maxReforestAreaUnia = model.intVar(90, 10000);
-        model.sumElements(reforestUnia.getSetVar(), minArea, minReforestAreaUnia).post();
-        model.sumElements(reforestUnia.getSetVar(), maxRestorableArea, maxReforestAreaUnia).post();
+        // Borendy restorable area constraint
+        minReforestAreaBorendy = model.intVar(90, 110);
+        maxReforestAreaBorendy = model.intVar(90, 10000);
+        model.sumElements(reforestBorendy.getSetVar(), minArea, minReforestAreaBorendy).post();
+        model.sumElements(reforestBorendy.getSetVar(), maxRestorableArea, maxReforestAreaBorendy).post();
 
-        // Radius constraint for Unia area
-        reserveModel.maxDiameterSpatial(reforestUnia, 6).post();
+        // Radius constraint for Borendy area
+        reserveModel.maxDiameterSpatial(reforestBorendy, 6).post();
 
     }
 
@@ -177,13 +188,13 @@ public class BaseProblemUnia {
     }
 
     public static void main(String[] args) throws IOException {
-        BaseProblemUnia baseProblem = new BaseProblemUnia("IIC_Unia_WGS84");
-        String path = Paths.get(baseProblem.resultsPath, "IICOptimal21" + ".csv").toString();
+        BaseProblemTest baseProblem = new BaseProblemTest("IIC_Borendy");
+        String path = Paths.get(baseProblem.resultsPath, "IICOptimalBorendy6" + ".csv").toString();
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line = br.readLine();
             String[] values = line.split(",");
             int[] solution = Arrays.stream(values).mapToInt(s -> Integer.parseInt(s)).toArray();
-            int[] borendy = IntStream.range(0, values.length).filter(i -> solution[i] == 3).toArray();
+            int[] borendy = IntStream.range(0, values.length).filter(i -> solution[i] == 2).toArray();
             System.out.println(Arrays.toString(borendy));
         }
     }

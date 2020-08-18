@@ -136,7 +136,7 @@ public class BaseProblem {
         potentialForestGraphVar = potentialForest.getSetVar();
 
         // Connectivity constraints on reforest regions
-        reserveModel.nbConnectedComponents(reforestBorendy, 1, 1).post();
+        reserveModel.nbConnectedComponents(reforestBorendy, 1, 10).post();
         reserveModel.nbConnectedComponents(reforestUnia, 1, 1).post();
 
         // Minimum area to ensure every site to >= 0.7 forest proportion (in ha)
