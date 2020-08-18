@@ -35,7 +35,7 @@ public class MaximizeIIC {
         IntVar IIC_Borendy = problemBorendy.reserveModel.integralIndexOfConnectivity(
                 problemBorendy.potentialForest,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
-                5
+                6
         );
 
         double IIC_initial_Borendy = ConnectivityIndices.getIIC(
@@ -77,13 +77,16 @@ public class MaximizeIIC {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
             modelBorendy.post(area);
             Solution s = solverBorendy.findOptimalSolution(IIC_Borendy,true);
+            int[] set = s.getSetVal(problemBorendy.reforestBorendy.getSetVar());
+            Arrays.sort(set);
             borendyFront.put(
                     s.getIntVal(problemBorendy.minReforestAreaBorendy),
                     new Integer[] {
                             s.getIntVal(IIC_Borendy)
                     }
             );
-            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(IIC_Borendy)}));
+            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(IIC_Borendy)})
+                    + " -> " + Arrays.toString(set));
             modelBorendy.unpost(area);
             solverBorendy.reset();
         }
@@ -102,7 +105,7 @@ public class MaximizeIIC {
         IntVar IIC_Unia = problemUnia.reserveModel.integralIndexOfConnectivity(
                 problemUnia.potentialForest,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
-                5
+                6
         );
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
@@ -137,7 +140,10 @@ public class MaximizeIIC {
             modelUnia.post(area);
             Solution s = solverUnia.findOptimalSolution(IIC_Unia,true);
             uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia));
-            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia)}));
+            int[] set = s.getSetVal(problemUnia.reforestUnia.getSetVar());
+            Arrays.sort(set);
+            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia)})
+                    + " -> " + Arrays.toString(set));
             modelUnia.unpost(area);
             solverUnia.reset();
         }

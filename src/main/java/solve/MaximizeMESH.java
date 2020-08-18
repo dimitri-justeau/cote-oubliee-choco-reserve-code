@@ -67,13 +67,16 @@ public class MaximizeMESH {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
             modelBorendy.post(area);
             Solution s = solverBorendy.findOptimalSolution(MESH_Borendy,true);
+            int[] set = s.getSetVal(problemBorendy.reforestBorendy.getSetVar());
+            Arrays.sort(set);
             borendyFront.put(
                     s.getIntVal(problemBorendy.minReforestAreaBorendy),
                     new Integer[] {
                             s.getIntVal(MESH_Borendy)
                     }
             );
-            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(MESH_Borendy)}));
+            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(MESH_Borendy)})
+                    + " -> " + Arrays.toString(set));
             modelBorendy.unpost(area);
             solverBorendy.reset();
         }
@@ -122,8 +125,11 @@ public class MaximizeMESH {
             Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
             modelUnia.post(area);
             Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
+            int[] set = s.getSetVal(problemUnia.reforestUnia.getSetVar());
+            Arrays.sort(set);
             uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
-            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia)}));
+            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia)})
+                    + " -> " + Arrays.toString(set));
             modelUnia.unpost(area);
             solverUnia.reset();
         }
