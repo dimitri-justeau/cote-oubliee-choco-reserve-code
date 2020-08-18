@@ -30,7 +30,7 @@ public class MaximizeMESH {
 
         Model modelBorendy = problemBorendy.reserveModel.getChocoModel();
 
-        IntVar MESH_Borendy = problemBorendy.reserveModel.effectiveMeshSize(problemBorendy.potentialForest, 2);
+        IntVar MESH_Borendy = problemBorendy.reserveModel.effectiveMeshSize(problemBorendy.potentialForest, 3);
 
         double MESH_initial_Borendy = FragmentationIndices.effectiveMeshSize(problemBorendy.potentialForestGraphVar.getGLB(), problemBorendy.grid.getNbCells());
 
@@ -89,7 +89,7 @@ public class MaximizeMESH {
 
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
 
-        IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, 2);
+        IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, 3);
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
 
