@@ -161,8 +161,8 @@ public class MaximizeIIC {
         int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)[0]).toArray();
         int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)).toArray();
 
-        IntVar valBorendy = model.intVar("IIC_Borendy",0, 100000);
-        IntVar valUnia = model.intVar("IIC_Unia",0, 100000);
+        IntVar valBorendy = model.intVar("IIC_Borendy",0, Integer.MAX_VALUE);
+        IntVar valUnia = model.intVar("IIC_Unia",0, Integer.MAX_VALUE);
 
         model.element(areaBorendy, areas, indexBorendy).post();
         model.element(areaUnia, areas, indexUnia).post();
@@ -171,7 +171,7 @@ public class MaximizeIIC {
 
         model.arithm(areaBorendy, "+", areaUnia, "<=", 200).post();
 
-        IntVar total = model.intVar("sumIIC", 0, 200000);
+        IntVar total = model.intVar("sumIIC", 0, Integer.MAX_VALUE);
         model.arithm(valBorendy, "+", valUnia, "=", total).post();
 
         List<Integer[]> optimalAllocations = new ArrayList<>();
