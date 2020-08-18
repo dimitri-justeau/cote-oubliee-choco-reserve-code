@@ -119,7 +119,7 @@ public class BaseProblem {
                 nonForestBufferBorendyPixels
         );
 
-        potentialForest = new ComposedRegion("potentialForest", false, forest, reforestBorendy, reforestUnia);
+        potentialForest = new ComposedRegion("potentialForest", false, SetType.BIPARTITESET, forest, reforestBorendy, reforestUnia);
 
         System.out.println("Regions created");
 
