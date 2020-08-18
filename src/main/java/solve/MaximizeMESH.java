@@ -163,7 +163,7 @@ public class MaximizeMESH {
 
         model.arithm(areaBorendy, "+", areaUnia, "<=", 200).post();
 
-        IntVar total = model.intVar("sumMESH", 0, (int) 2 * Math.pow(20, 6));
+        IntVar total = model.intVar("sumMESH", 0, (int) Math.pow(40, 6));
         model.arithm(valBorendy, "+", valUnia, "=", total).post();
 
         List<Integer[]> optimalAllocations = new ArrayList<>();

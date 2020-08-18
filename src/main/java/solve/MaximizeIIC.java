@@ -177,7 +177,7 @@ public class MaximizeIIC {
 
         model.arithm(areaBorendy, "+", areaUnia, "<=", 200).post();
 
-        IntVar total = model.intVar("sumIIC", 0, (int) 2 * Math.pow(10, 6));
+        IntVar total = model.intVar("sumIIC", 0, (int) Math.pow(20, 6));
         model.arithm(valBorendy, "+", valUnia, "=", total).post();
 
         List<Integer[]> optimalAllocations = new ArrayList<>();
