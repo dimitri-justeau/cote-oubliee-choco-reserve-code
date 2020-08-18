@@ -153,8 +153,8 @@ public class MaximizeMESH {
         int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)[0]).toArray();
         int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)).toArray();
 
-        IntVar valBorendy = model.intVar("MESH_Borendy",0, (int) Math.pow(20, 6));
-        IntVar valUnia = model.intVar("MESH_Unia",0, (int) Math.pow(20, 6));
+        IntVar valBorendy = model.intVar("MESH_Borendy",0, 2 * (int) Math.pow(10, 6));
+        IntVar valUnia = model.intVar("MESH_Unia",0, 2 *(int) Math.pow(10, 6));
 
         model.element(areaBorendy, areas, indexBorendy).post();
         model.element(areaUnia, areas, indexUnia).post();
@@ -163,7 +163,7 @@ public class MaximizeMESH {
 
         model.arithm(areaBorendy, "+", areaUnia, "<=", 200).post();
 
-        IntVar total = model.intVar("sumMESH", 0, (int) Math.pow(40, 6));
+        IntVar total = model.intVar("sumMESH", 0, 3* (int) Math.pow(10, 6));
         model.arithm(valBorendy, "+", valUnia, "=", total).post();
 
         List<Integer[]> optimalAllocations = new ArrayList<>();
