@@ -50,28 +50,28 @@ public class MaximizeIIC {
 
         System.out.println("IIC initial = " + IIC_initial_Borendy);
 
-        Map<Integer, Integer[]> borendyFront = new HashMap<>();
-//        borendyFront.put(90, 6349);
-//        borendyFront.put(91,6349);
-//        borendyFront.put(92,6349);
-//        borendyFront.put(93,6348);
-//        borendyFront.put(94,6348);
-//        borendyFront.put(95,6351);
-//        borendyFront.put(96,6351);
-//        borendyFront.put(97,6351);
-//        borendyFront.put(98,6349);
-//        borendyFront.put(99,6351);
-//        borendyFront.put(100,6352);
-//        borendyFront.put(101,6352);
-//        borendyFront.put(102,6353);
-//        borendyFront.put(103,6351);
-//        borendyFront.put(104,6351);
-//        borendyFront.put(105,6352);
-//        borendyFront.put(106,6354);
-//        borendyFront.put(107,6355);
-//        borendyFront.put(108,6354);
-//        borendyFront.put(109,6352);
-//        borendyFront.put(110,6352);
+        Map<Integer, Integer> borendyFront = new HashMap<>();
+        borendyFront.put(90, 215132);
+        borendyFront.put(91,215132);
+        borendyFront.put(92,215132);
+        borendyFront.put(93,215132);
+        borendyFront.put(94,215132);
+        borendyFront.put(95,215225);
+        borendyFront.put(96,215225);
+        borendyFront.put(97,215225);
+        borendyFront.put(98,215132);
+        borendyFront.put(99,215225);
+        borendyFront.put(100,215225);
+        borendyFront.put(101,215225);
+        borendyFront.put(102,215225);
+        borendyFront.put(103,215225);
+        borendyFront.put(104,215225);
+        borendyFront.put(105,215225);
+        borendyFront.put(106,215316);
+        borendyFront.put(107,215316);
+        borendyFront.put(108,215316);
+        borendyFront.put(109,215225);
+        borendyFront.put(110,215225);
 
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
@@ -81,9 +81,7 @@ public class MaximizeIIC {
             Arrays.sort(set);
             borendyFront.put(
                     s.getIntVal(problemBorendy.minReforestAreaBorendy),
-                    new Integer[] {
-                            s.getIntVal(IIC_Borendy)
-                    }
+                    s.getIntVal(IIC_Borendy)
             );
             System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(IIC_Borendy)})
                     + " -> " + Arrays.toString(set));
@@ -94,7 +92,7 @@ public class MaximizeIIC {
         System.out.println("minArea,IIC");
         int[] keysBorendy = borendyFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
         for (int x : keysBorendy) {
-            System.out.println(x + "," + borendyFront.get(x)[0]);
+            System.out.println(x + "," + borendyFront.get(x));
         }
 
         // Unia //
@@ -110,43 +108,43 @@ public class MaximizeIIC {
 
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
 
-        solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
+        solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
-//        uniaFront.put(90, 35100);
-//        uniaFront.put(91,35126);
-//        uniaFront.put(92,35100);
-//        uniaFront.put(93,35126);
-//        uniaFront.put(94,35100);
-//        uniaFront.put(95,35100);
-//        uniaFront.put(96, 35126);
-//        uniaFront.put(97,35126);
-//        uniaFront.put(98,35100);
-//        uniaFront.put(99,35126);
-//        uniaFront.put(100,35126);
-//        uniaFront.put(101,35152);
-//        uniaFront.put(102,35126);
-//        uniaFront.put(103,35126);
-//        uniaFront.put(104,35126);
-//        uniaFront.put(105,35152);
-//        uniaFront.put(106,35152);
-//        uniaFront.put(107,35126);
-//        uniaFront.put(108,35152);
-//        uniaFront.put(109,35152);
-//        uniaFront.put(110,35152);
-
-        for (int a = 90; a <= 110; a++) {
-            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
-            modelUnia.post(area);
-            Solution s = solverUnia.findOptimalSolution(IIC_Unia,true);
-            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia));
-            int[] set = s.getSetVal(problemUnia.reforestUnia.getSetVar());
-            Arrays.sort(set);
-            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia)})
-                    + " -> " + Arrays.toString(set));
-            modelUnia.unpost(area);
-            solverUnia.reset();
-        }
+        uniaFront.put(90, 220982);
+        uniaFront.put(91,220909);
+        uniaFront.put(92,220990);
+        uniaFront.put(93,220983);
+        uniaFront.put(94,220983);
+        uniaFront.put(95,221064);
+        uniaFront.put(96, 221064);
+        uniaFront.put(97,221072);
+        uniaFront.put(98,221092);
+        uniaFront.put(99,221092);
+        uniaFront.put(100,221064);
+        uniaFront.put(101,221071);
+        uniaFront.put(102,221145);
+        uniaFront.put(103,221145);
+        uniaFront.put(104,221278);
+        uniaFront.put(105,221173);
+        uniaFront.put(106,221145);
+        uniaFront.put(107,221278);
+        uniaFront.put(108,221278);
+        uniaFront.put(109,221225);
+        uniaFront.put(110,221361);
+//
+//        for (int a = 90; a <= 110; a++) {
+//            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
+//            modelUnia.post(area);
+//            Solution s = solverUnia.findOptimalSolution(IIC_Unia,true);
+//            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia));
+//            int[] set = s.getSetVal(problemUnia.reforestUnia.getSetVar());
+//            Arrays.sort(set);
+//            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia)})
+//                    + " -> " + Arrays.toString(set));
+//            modelUnia.unpost(area);
+//            solverUnia.reset();
+//        }
 
         System.out.println("minArea,IIC");
         int[] keysUnia = uniaFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
@@ -164,7 +162,7 @@ public class MaximizeIIC {
         IntVar areaUnia = model.intVar("areaUnia", 90, 110);
 
         int[] areas = IntStream.range(90, 111).toArray();
-        int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)[0]).toArray();
+        int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)).toArray();
         int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)).toArray();
 
         IntVar valBorendy = model.intVar("IIC_Borendy",0, (int) Math.pow(10, 6));
@@ -252,7 +250,7 @@ public class MaximizeIIC {
             }
             // Borendy
             Constraint areaB = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", alloc[0]);
-            Constraint valB = modelBorendy.arithm(IIC_Borendy, "=", borendyFront.get(alloc[0])[0]);
+            Constraint valB = modelBorendy.arithm(IIC_Borendy, "=", borendyFront.get(alloc[0]));
             areaB.post();
             valB.post();
             List<Solution> solsB = solverBorendy.findAllSolutions();
