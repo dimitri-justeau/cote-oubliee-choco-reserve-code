@@ -38,10 +38,11 @@ public class MaximizeIICAlt {
         // Borendy //
         BaseProblemBorendy problemBorendy = new BaseProblemBorendy("IIC_Borendy");
         Model modelBorendy = problemBorendy.reserveModel.getChocoModel();
-        IntVar IIC_Borendy = problemBorendy.reserveModel.integralIndexOfConnectivity(
+        IntVar IIC_Borendy = problemBorendy.reserveModel.integralIndexOfConnectivity (
                 problemBorendy.potentialForest,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
-                precision
+                precision,
+                true
         );
         double IIC_initial_Borendy = ConnectivityIndices.getIIC(
                 problemBorendy.potentialForestGraphVar.getGLB(),
@@ -111,10 +112,11 @@ public class MaximizeIICAlt {
         IntVar IIC_Unia = problemUnia.reserveModel.integralIndexOfConnectivity(
                 problemUnia.potentialForest,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
-                precision
+                precision,
+                true
         );
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
-        solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
+        solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
 //        uniaFront.put(90,220982);
@@ -235,7 +237,7 @@ public class MaximizeIICAlt {
                     occurrencesInOptimalSolutionBorendy[i] += 1;
                 }
                 try {
-                    problemBorendy.saveSolution("IIC_" + alloc[0] + "_" + alloc[1] + "_Borendy_" + n);
+                    problemBorendy.saveSolution("IIC_" + alloc[0] + "_" + alloc[1] + "_Borendy_" + n, sol);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -257,7 +259,7 @@ public class MaximizeIICAlt {
                     occurrencesInOptimalSolutionUnia[i] += 1;
                 }
                 try {
-                    problemUnia.saveSolution("IIC_" + alloc[0] + "_" + alloc[1] + "_Unia_" + n);
+                    problemUnia.saveSolution("IIC_" + alloc[0] + "_" + alloc[1] + "_Unia_" + n, sol);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -7,6 +7,7 @@ import chocoreserve.solver.region.ComposedRegion;
 import chocoreserve.solver.region.Region;
 import chocoreserve.solver.variable.SpatialGraphVar;
 import org.chocosolver.graphsolver.GraphModel;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.objects.setDataStructures.SetType;
 
@@ -149,12 +150,8 @@ public class BaseProblemUnia {
 
     }
 
-    public void saveSolution(String name) throws IOException {
+    public void saveSolution(String name, int[] solution) throws IOException {
         String path = Paths.get(resultsPath, name + ".csv").toString();
-        int[] solution = IntStream.range(0, reserveModel.getSites().length)
-                .map(j -> reserveModel.getSites()[j].getValue())
-                .toArray();
-
         BufferedWriter br = null;
         try {
             br = new BufferedWriter(new FileWriter(path));
@@ -174,6 +171,20 @@ public class BaseProblemUnia {
         SolutionExporter exp = new SolutionExporter(resultsPath, name + ".csv");
         exp.exportCompleteCsv();
         exp.generateRaster();
+    }
+
+    public void saveSolution(String name, Solution sol) throws IOException {
+        int[] solution = IntStream.range(0, reserveModel.getSites().length)
+                .map(j -> sol.getIntVal(reserveModel.getSites()[j]))
+                .toArray();
+        saveSolution(name, solution);
+    }
+
+    public void saveSolution(String name) throws IOException {
+        int[] solution = IntStream.range(0, reserveModel.getSites().length)
+                .map(j -> reserveModel.getSites()[j].getValue())
+                .toArray();
+        saveSolution(name, solution);
     }
 
     public static void main(String[] args) throws IOException {
