@@ -96,7 +96,7 @@ public class MaximizeMESHAlt {
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
         IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, precision);
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
-        solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
+        solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, List<Solution>> uniaSols = new HashMap<>();
         Map<Integer, Integer> uniaFront = new HashMap<>();
@@ -126,7 +126,6 @@ public class MaximizeMESHAlt {
             Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
             modelUnia.post(area);
             Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
-            s.restore();
             uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
             System.out.println(
                     Arrays.toString(new int[] {
