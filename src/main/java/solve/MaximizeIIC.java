@@ -111,40 +111,40 @@ public class MaximizeIIC {
         solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
-        uniaFront.put(90, 220982);
-        uniaFront.put(91,220909);
-        uniaFront.put(92,220990);
-        uniaFront.put(93,220983);
-        uniaFront.put(94,220983);
-        uniaFront.put(95,221064);
-        uniaFront.put(96, 221064);
-        uniaFront.put(97,221072);
-        uniaFront.put(98,221092);
-        uniaFront.put(99,221092);
-        uniaFront.put(100,221064);
-        uniaFront.put(101,221071);
-        uniaFront.put(102,221145);
-        uniaFront.put(103,221145);
-        uniaFront.put(104,221278);
-        uniaFront.put(105,221173);
-        uniaFront.put(106,221145);
-        uniaFront.put(107,221278);
-        uniaFront.put(108,221278);
-        uniaFront.put(109,221225);
-        uniaFront.put(110,221361);
+//        uniaFront.put(90, 220982);
+//        uniaFront.put(91,220909);
+//        uniaFront.put(92,220990);
+//        uniaFront.put(93,220983);
+//        uniaFront.put(94,220983);
+//        uniaFront.put(95,221064);
+//        uniaFront.put(96, 221064);
+//        uniaFront.put(97,221072);
+//        uniaFront.put(98,221092);
+//        uniaFront.put(99,221092);
+//        uniaFront.put(100,221064);
+//        uniaFront.put(101,221071);
+//        uniaFront.put(102,221145);
+//        uniaFront.put(103,221145);
+//        uniaFront.put(104,221278);
+//        uniaFront.put(105,221173);
+//        uniaFront.put(106,221145);
+//        uniaFront.put(107,221278);
+//        uniaFront.put(108,221278);
+//        uniaFront.put(109,221225);
+//        uniaFront.put(110,221361);
 //
-//        for (int a = 90; a <= 110; a++) {
-//            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
-//            modelUnia.post(area);
-//            Solution s = solverUnia.findOptimalSolution(IIC_Unia,true);
-//            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia));
-//            int[] set = s.getSetVal(problemUnia.reforestUnia.getSetVar());
-//            Arrays.sort(set);
-//            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia)})
-//                    + " -> " + Arrays.toString(set));
-//            modelUnia.unpost(area);
-//            solverUnia.reset();
-//        }
+        for (int a = 90; a <= 110; a++) {
+            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
+            modelUnia.post(area);
+            Solution s = solverUnia.findOptimalSolution(IIC_Unia,true);
+            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia));
+            int[] set = s.getSetVal(problemUnia.reforestUnia.getSetVar());
+            Arrays.sort(set);
+            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia)})
+                    + " -> " + Arrays.toString(set));
+            modelUnia.unpost(area);
+            solverUnia.reset();
+        }
 
         System.out.println("minArea,IIC");
         int[] keysUnia = uniaFront.keySet().stream().mapToInt(i -> i).sorted().toArray();

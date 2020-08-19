@@ -28,8 +28,8 @@ public class SolutionExporter {
 
         int[] forest_data = data.forest_binary.getQuantitativeData();
 
-        int[] outPixels = IntStream.range(0, forest_data.length)
-                .filter(i -> forest_data[i] == -1 ? true : false)
+        int[] outPixels = IntStream.range(0, data.forest_binary_data.length)
+                .filter(i -> data.forest_binary_data[i] <= -1)
                 .toArray();
 
         PartialRegularSquareGrid grid = new PartialRegularSquareGrid(data.height, data.width, outPixels);
