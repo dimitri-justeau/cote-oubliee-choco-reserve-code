@@ -68,7 +68,7 @@ public class MaximizeMESHAlt {
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
             modelBorendy.post(area);
-            List<Solution> s = solverBorendy.findAllOptimalSolutions(MESH_Borendy,true);
+            List<Solution> s = problemBorendy.reserveModel.findAllOptimalSolutions(MESH_Borendy,true);
             borendyFront.put(
                     s.get(0).getIntVal(problemBorendy.minReforestAreaBorendy),
                     s.get(0).getIntVal(MESH_Borendy)
@@ -83,7 +83,6 @@ public class MaximizeMESHAlt {
             );
             modelBorendy.unpost(area);
             solverBorendy.reset();
-            solverBorendy.setSearch(Search.minDomUBSearch(problemBorendy.reserveModel.getSites()));
         }
 
         System.out.println("minArea,MESH,no");
@@ -127,6 +126,7 @@ public class MaximizeMESHAlt {
             Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
             modelUnia.post(area);
             Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
+            s.restore();
             uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
             System.out.println(
                     Arrays.toString(new int[] {
@@ -136,7 +136,6 @@ public class MaximizeMESHAlt {
             );
             modelUnia.unpost(area);
             solverUnia.reset();
-            solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
         }
 
         System.out.println("minArea,MESH");

@@ -10,6 +10,8 @@ import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.loop.monitors.IMonitorInitialize;
+import org.chocosolver.solver.search.loop.monitors.IMonitorRestart;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
@@ -80,7 +82,7 @@ public class MaximizeIICAlt {
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
             modelBorendy.post(area);
-            List<Solution> s = solverBorendy.findAllOptimalSolutions(IIC_Borendy,true);
+            List<Solution> s = problemBorendy.reserveModel.findAllOptimalSolutions(IIC_Borendy,true);
             borendyFront.put(
                     s.get(0).getIntVal(problemBorendy.minReforestAreaBorendy),
                     s.get(0).getIntVal(IIC_Borendy)
@@ -95,7 +97,6 @@ public class MaximizeIICAlt {
             );
             modelBorendy.unpost(area);
             solverBorendy.reset();
-            solverBorendy.setSearch(Search.minDomUBSearch(problemBorendy.reserveModel.getSites()));
         }
 
         System.out.println("minArea,IIC,no");
@@ -115,7 +116,6 @@ public class MaximizeIICAlt {
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
         solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
-        Map<Integer, List<Solution>> uniaSols = new HashMap<>();
         Map<Integer, Integer> uniaFront = new HashMap<>();
 //        uniaFront.put(90,1089606);
 //        uniaFront.put(91,1090424);
@@ -152,7 +152,6 @@ public class MaximizeIICAlt {
             );
             modelUnia.unpost(area);
             solverUnia.reset();
-            solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
         }
 
         System.out.println("minArea,IIC");
