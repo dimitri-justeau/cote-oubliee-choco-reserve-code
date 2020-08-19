@@ -83,6 +83,7 @@ public class MaximizeMESHAlt {
             );
             modelBorendy.unpost(area);
             solverBorendy.reset();
+            solverBorendy.setSearch(Search.minDomUBSearch(problemBorendy.reserveModel.getSites()));
         }
 
         System.out.println("minArea,MESH,no");
@@ -96,7 +97,7 @@ public class MaximizeMESHAlt {
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
         IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, precision);
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
-        solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
+        solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, List<Solution>> uniaSols = new HashMap<>();
         Map<Integer, Integer> uniaFront = new HashMap<>();
@@ -125,18 +126,17 @@ public class MaximizeMESHAlt {
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
             modelUnia.post(area);
-            List<Solution> s = solverUnia.findAllOptimalSolutions(MESH_Unia,true);
-            uniaFront.put(s.get(0).getIntVal(problemUnia.minReforestAreaUnia), s.get(0).getIntVal(MESH_Unia));
-            uniaSols.put(a, s);
+            Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
+            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
             System.out.println(
                     Arrays.toString(new int[] {
-                            s.get(0).getIntVal(problemUnia.minReforestAreaUnia),
-                            s.get(0).getIntVal(MESH_Unia)
+                            s.getIntVal(problemUnia.minReforestAreaUnia),
+                            s.getIntVal(MESH_Unia)
                     })
-                            + " No. sols = " + s.size()
             );
             modelUnia.unpost(area);
             solverUnia.reset();
+            solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
         }
 
         System.out.println("minArea,MESH,no");
@@ -253,7 +253,14 @@ public class MaximizeMESHAlt {
                 }
             }
             // Unia
-            List<Solution> solsU = uniaSols.get(alloc[1]);
+            Constraint areaU = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", alloc[1]);
+            Constraint valU = modelUnia.arithm(MESH_Unia, "=", uniaFront.get(alloc[1]));
+            areaU.post();
+            valU.post();
+            List<Solution> solsU = solverUnia.findAllSolutions();
+            modelUnia.unpost(areaU);
+            modelUnia.unpost(valU);
+            solverUnia.reset();
             for (int n = 0; n < solsU.size(); n++) {
                 Solution sol = solsU.get(n);
                 sol.restore();
