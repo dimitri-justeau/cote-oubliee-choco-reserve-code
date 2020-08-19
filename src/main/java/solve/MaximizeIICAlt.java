@@ -2,6 +2,8 @@ package solve;
 
 import baseproblem.BaseProblemBorendy;
 import baseproblem.BaseProblemUnia;
+import chocoreserve.grid.neighborhood.Neighborhoods;
+import chocoreserve.util.connectivity.ConnectivityIndices;
 import chocoreserve.util.fragmentation.FragmentationIndices;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
@@ -23,61 +25,71 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 
-public class MaximizeMESHAlt {
+public class MaximizeIICAlt {
 
     public static void main(String[] args) throws IOException, ContradictionException {
 
         long t = System.currentTimeMillis();
 
-        int precision = 3;
+        int precision = 6;
 
-        // Base problem Borendy //
-        BaseProblemBorendy problemBorendy = new BaseProblemBorendy("MESH_Borendy");
+        // Borendy //
+        BaseProblemBorendy problemBorendy = new BaseProblemBorendy("IIC_Borendy");
         Model modelBorendy = problemBorendy.reserveModel.getChocoModel();
-        IntVar MESH_Borendy = problemBorendy.reserveModel.effectiveMeshSize(problemBorendy.potentialForest, precision);
-        double MESH_initial_Borendy = FragmentationIndices.effectiveMeshSize(problemBorendy.potentialForestGraphVar.getGLB(), problemBorendy.grid.getNbCells());
+        IntVar IIC_Borendy = problemBorendy.reserveModel.integralIndexOfConnectivity(
+                problemBorendy.potentialForest,
+                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
+                precision
+        );
+        double IIC_initial_Borendy = ConnectivityIndices.getIIC(
+                problemBorendy.potentialForestGraphVar.getGLB(),
+                problemBorendy.grid,
+                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED
+        );
+
         Solver solverBorendy = problemBorendy.reserveModel.getChocoModel().getSolver();
+
         solverBorendy.setSearch(Search.minDomUBSearch(problemBorendy.reserveModel.getSites()));
 
-        System.out.println("MESH initial = " + MESH_initial_Borendy);
+        System.out.println("IIC initial = " + IIC_initial_Borendy);
 
         Map<Integer, List<Solution>> borendySols = new HashMap<>();
         Map<Integer, Integer> borendyFront = new HashMap<>();
-//        borendyFront.put(90,1080686);
-//        borendyFront.put(91,1080686);
-//        borendyFront.put(92,1080830);
-//        borendyFront.put(93,1080830);
-//        borendyFront.put(94,1080830);
-//        borendyFront.put(95,1080830);
-//        borendyFront.put(96,1080830);
-//        borendyFront.put(97,1080830);
-//        borendyFront.put(98,1080830);
-//        borendyFront.put(99,1080830);
-//        borendyFront.put(100,1080830);
-//        borendyFront.put(101,1080830);
-//        borendyFront.put(102,1080974);
-//        borendyFront.put(103,1080974);
-//        borendyFront.put(104,1080974);
-//        borendyFront.put(105,1080974);
-//        borendyFront.put(106,1080846);
-//        borendyFront.put(107,1080974);
-//        borendyFront.put(108,1080974);
-//        borendyFront.put(109,1080830);
-//        borendyFront.put(110,1080830);
+//        borendyFront.put(90, 215132);
+//        borendyFront.put(91,215132);
+//        borendyFront.put(92,215132);
+//        borendyFront.put(93,215132);
+//        borendyFront.put(94,215132);
+//        borendyFront.put(95,215225);
+//        borendyFront.put(96,215225);
+//        borendyFront.put(97,215225);
+//        borendyFront.put(98,215132);
+//        borendyFront.put(99,215225);
+//        borendyFront.put(100,215225);
+//        borendyFront.put(101,215225);
+//        borendyFront.put(102,215225);
+//        borendyFront.put(103,215225);
+//        borendyFront.put(104,215225);
+//        borendyFront.put(105,215225);
+//        borendyFront.put(106,215316);
+//        borendyFront.put(107,215316);
+//        borendyFront.put(108,215316);
+//        borendyFront.put(109,215225);
+//        borendyFront.put(110,215225);
 
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
             modelBorendy.post(area);
-            List<Solution> s = solverBorendy.findAllOptimalSolutions(MESH_Borendy,true);
+            List<Solution> s = solverBorendy.findAllOptimalSolutions(IIC_Borendy,true);
             borendyFront.put(
                     s.get(0).getIntVal(problemBorendy.minReforestAreaBorendy),
-                    s.get(0).getIntVal(MESH_Borendy)
+                    s.get(0).getIntVal(IIC_Borendy)
             );
             borendySols.put(a, s);
             System.out.println(
                     Arrays.toString(new int[] {
                             s.get(0).getIntVal(problemBorendy.minReforestAreaBorendy),
-                            s.get(0).getIntVal(MESH_Borendy)
+                            s.get(0).getIntVal(IIC_Borendy)
                     })
                             + " No. sols = " + s.size()
             );
@@ -86,60 +98,64 @@ public class MaximizeMESHAlt {
             solverBorendy.setSearch(Search.minDomUBSearch(problemBorendy.reserveModel.getSites()));
         }
 
-        System.out.println("minArea,MESH,no");
+        System.out.println("minArea,IIC,no");
         int[] keysBorendy = borendyFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
         for (int x : keysBorendy) {
             System.out.println(x + "," + borendyFront.get(x) + "," + borendySols.get(x).size());
         }
 
         // Unia //
-        BaseProblemUnia problemUnia = new BaseProblemUnia("MESH_Unia");
+        BaseProblemUnia problemUnia = new BaseProblemUnia("IIC_Unia");
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
-        IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, precision);
+        IntVar IIC_Unia = problemUnia.reserveModel.integralIndexOfConnectivity(
+                problemUnia.potentialForest,
+                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
+                precision
+        );
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
         solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, List<Solution>> uniaSols = new HashMap<>();
         Map<Integer, Integer> uniaFront = new HashMap<>();
-        uniaFront.put(90,1089606);
-        uniaFront.put(91,1090424);
-        uniaFront.put(92,1089606);
-        uniaFront.put(93,1090425);
-        uniaFront.put(94,1090424);
-        uniaFront.put(95,1089606);
-        uniaFront.put(96,1090425);
-        uniaFront.put(97,1090424);
-        uniaFront.put(98,1090425);
-        uniaFront.put(99,1090424);
-        uniaFront.put(100,1089606);
-        uniaFront.put(101,1091243);
-        uniaFront.put(102,1090425);
-        uniaFront.put(103,1090424);
-        uniaFront.put(104,1090424);
-        uniaFront.put(105,1091243);
-        uniaFront.put(106,1090425);
-        uniaFront.put(107,1091243);
-        uniaFront.put(108,1091243);
-        uniaFront.put(109,1091243);
-        uniaFront.put(110,1091243);
+//        uniaFront.put(90,1089606);
+//        uniaFront.put(91,1090424);
+//        uniaFront.put(92,1089606);
+//        uniaFront.put(93,1090425);
+//        uniaFront.put(94,1090424);
+//        uniaFront.put(95,1089606);
+//        uniaFront.put(96,1090425);
+//        uniaFront.put(97,1090424);
+//        uniaFront.put(98,1090425);
+//        uniaFront.put(99,1090424);
+//        uniaFront.put(100,1089606);
+//        uniaFront.put(101,1091243);
+//        uniaFront.put(102,1090425);
+//        uniaFront.put(103,1090424);
+//        uniaFront.put(104,1090424);
+//        uniaFront.put(105,1091243);
+//        uniaFront.put(106,1090425);
+//        uniaFront.put(107,1091243);
+//        uniaFront.put(108,1091243);
+//        uniaFront.put(109,1091243);
+//        uniaFront.put(110,1091243);
 
-//        for (int a = 90; a <= 110; a++) {
-//            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
-//            modelUnia.post(area);
-//            Solution s = solverUnia.findOptimalSolution(MESH_Unia,true);
-//            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(MESH_Unia));
-//            System.out.println(
-//                    Arrays.toString(new int[] {
-//                            s.getIntVal(problemUnia.minReforestAreaUnia),
-//                            s.getIntVal(MESH_Unia)
-//                    })
-//            );
-//            modelUnia.unpost(area);
-//            solverUnia.reset();
-//            solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
-//        }
+        for (int a = 90; a <= 110; a++) {
+            Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
+            modelUnia.post(area);
+            Solution s = solverUnia.findOptimalSolution(IIC_Unia,true);
+            uniaFront.put(s.getIntVal(problemUnia.minReforestAreaUnia), s.getIntVal(IIC_Unia));
+            System.out.println(
+                    Arrays.toString(new int[] {
+                            s.getIntVal(problemUnia.minReforestAreaUnia),
+                            s.getIntVal(IIC_Unia)
+                    })
+            );
+            modelUnia.unpost(area);
+            solverUnia.reset();
+            solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
+        }
 
-        System.out.println("minArea,MESH");
+        System.out.println("minArea,IIC");
         int[] keysUnia = uniaFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
         for (int x : keysUnia) {
             System.out.println(x + "," + uniaFront.get(x));
@@ -158,8 +174,8 @@ public class MaximizeMESHAlt {
         int[] valsBorendy = IntStream.range(90, 111).map(i -> borendyFront.get(i)).toArray();
         int[] valsUnia = IntStream.range(90, 111).map(i -> uniaFront.get(i)).toArray();
 
-        IntVar valBorendy = model.intVar("MESH_Borendy",0, 2 * (int) Math.pow(10, 2 * precision));
-        IntVar valUnia = model.intVar("MESH_Unia",0, 2 *(int) Math.pow(10, 2 * precision));
+        IntVar valBorendy = model.intVar("IIC_Borendy",0, (int) Math.pow(10, precision));
+        IntVar valUnia = model.intVar("IIC_Unia",0, (int) Math.pow(10, precision));
 
         model.element(areaBorendy, areas, indexBorendy).post();
         model.element(areaUnia, areas, indexUnia).post();
@@ -168,7 +184,7 @@ public class MaximizeMESHAlt {
 
         model.arithm(areaBorendy, "+", areaUnia, "<=", 200).post();
 
-        IntVar total = model.intVar("sumMESH", 0, 3 * (int) Math.pow(10, 2 * precision));
+        IntVar total = model.intVar("sumIIC", 0, 2 * (int) Math.pow(10, precision));
         model.arithm(valBorendy, "+", valUnia, "=", total).post();
 
         List<Integer[]> optimalAllocations = new ArrayList<>();
@@ -176,9 +192,9 @@ public class MaximizeMESHAlt {
         Solver solver = model.getSolver();
         solver.plugMonitor((IMonitorSolution) () -> {
             System.out.println("Area Borendy = " + areaBorendy.getValue());
-            System.out.println("MESH Borendy = " + valBorendy.getValue());
+            System.out.println("IIC Borendy = " + valBorendy.getValue());
             System.out.println("Area Unia = " + areaUnia.getValue());
-            System.out.println("MESH Unia = " + valUnia.getValue());
+            System.out.println("IIC Unia = " + valUnia.getValue());
         });
         solver.showStatistics();
         List<Solution> allocs = solver.findAllOptimalSolutions(total, true);
@@ -220,14 +236,14 @@ public class MaximizeMESHAlt {
                     occurrencesInOptimalSolutionBorendy[i] += 1;
                 }
                 try {
-                    problemBorendy.saveSolution("MESH_" + alloc[0] + "_" + alloc[1] + "_Borendy_" + n);
+                    problemBorendy.saveSolution("IIC_" + alloc[0] + "_" + alloc[1] + "_Borendy_" + n);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             // Unia
             Constraint areaU = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", alloc[1]);
-            Constraint valU = modelUnia.arithm(MESH_Unia, "=", uniaFront.get(alloc[1]));
+            Constraint valU = modelUnia.arithm(IIC_Unia, "=", uniaFront.get(alloc[1]));
             areaU.post();
             valU.post();
             List<Solution> solsU = solverUnia.findAllSolutions();
@@ -242,7 +258,7 @@ public class MaximizeMESHAlt {
                     occurrencesInOptimalSolutionUnia[i] += 1;
                 }
                 try {
-                    problemUnia.saveSolution("MESH_" + alloc[0] + "_" + alloc[1] + "_Unia_" + n);
+                    problemUnia.saveSolution("IIC_" + alloc[0] + "_" + alloc[1] + "_Unia_" + n);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -267,9 +283,9 @@ public class MaximizeMESHAlt {
                     totalReforested,
                     SetType.BIPARTITESET
             );
-            double totalMesh = FragmentationIndices.effectiveMeshSize(g, problemBorendy.grid.getNbCells());
-            int roundedTotalMesh = (int) Math.round(totalMesh * Math.pow(10, precision));
-            System.out.println("TOTAL MESH = " + totalMesh + " - Rounded: " + roundedTotalMesh);
+            double totalIIC = ConnectivityIndices.getIIC(g, problemBorendy.grid, Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED);
+            int roundedTotalIIC = (int) Math.round(totalIIC * Math.pow(10, precision));
+            System.out.println("TOTAL IIC = " + totalIIC + " - Rounded: " + roundedTotalIIC);
         }
 
         // Export occurrences count
