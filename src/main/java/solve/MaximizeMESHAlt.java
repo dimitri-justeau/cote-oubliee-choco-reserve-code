@@ -96,7 +96,7 @@ public class MaximizeMESHAlt {
         Model modelUnia = problemUnia.reserveModel.getChocoModel();
         IntVar MESH_Unia = problemUnia.reserveModel.effectiveMeshSize(problemUnia.potentialForest, precision);
         Solver solverUnia = problemUnia.reserveModel.getChocoModel().getSolver();
-        solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
+        solverUnia.setSearch(Search.activityBasedSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
 //        uniaFront.put(90,1089607);
