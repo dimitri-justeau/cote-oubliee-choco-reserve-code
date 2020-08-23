@@ -63,21 +63,21 @@ public class MaximizeMESH {
         borendyFront.put(109,1080830);
         borendyFront.put(110,1080830);
 
-//        for (int a = 90; a <= 110; a++) {
-//            Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
-//            modelBorendy.post(area);
-//            Solution s = solverBorendy.findOptimalSolution(MESH_Borendy,true);
-//            int[] set = s.getSetVal(problemBorendy.reforestBorendy.getSetVar());
-//            Arrays.sort(set);
-//            borendyFront.put(
-//                    s.getIntVal(problemBorendy.minReforestAreaBorendy),
-//                    s.getIntVal(MESH_Borendy)
-//            );
-//            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(MESH_Borendy)})
-//                    + " -> " + Arrays.toString(set));
-//            modelBorendy.unpost(area);
-//            solverBorendy.reset();
-//        }
+        for (int a = 90; a <= 110; a++) {
+            Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
+            modelBorendy.post(area);
+            Solution s = solverBorendy.findOptimalSolution(MESH_Borendy,true);
+            int[] set = s.getSetVal(problemBorendy.reforestBorendy.getSetVar());
+            Arrays.sort(set);
+            borendyFront.put(
+                    s.getIntVal(problemBorendy.minReforestAreaBorendy),
+                    s.getIntVal(MESH_Borendy)
+            );
+            System.out.println(Arrays.toString(new int[] {s.getIntVal(problemBorendy.minReforestAreaBorendy), s.getIntVal(MESH_Borendy)})
+                    + " -> " + Arrays.toString(set));
+            modelBorendy.unpost(area);
+            solverBorendy.reset();
+        }
 
         System.out.println("minArea,MESH");
         int[] keysBorendy = borendyFront.keySet().stream().mapToInt(i -> i).sorted().toArray();
