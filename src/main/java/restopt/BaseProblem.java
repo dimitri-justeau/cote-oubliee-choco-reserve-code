@@ -9,8 +9,6 @@ import chocoreserve.util.connectivity.ConnectivityIndices;
 import chocoreserve.util.fragmentation.FragmentationIndices;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.search.loop.lns.INeighborFactory;
-import org.chocosolver.solver.search.loop.lns.neighbors.INeighbor;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.objects.setDataStructures.SetType;
@@ -26,15 +24,16 @@ public class BaseProblem {
     public Region habitat, nonHabitat, restore;
     public ComposedRegion potentialHabitat;
     public ReserveModel reserveModel;
+    public int accessibleVal;
 
     public IntVar minRestore;
     public IntVar MESH;
     public IntVar IIC;
 
-    public BaseProblem(Data data) {
+    public BaseProblem(Data data, int accessibleVal) {
 
         this.data = data;
-
+        this.accessibleVal = accessibleVal;
         // ------------------ //
         // PREPARE INPUT DATA //
         // ------------------ //
@@ -59,7 +58,7 @@ public class BaseProblem {
                 .toArray();
 
         int[] accessibleNonHabitatPixels = IntStream.range(0, data.accessible_areas_data.length)
-                .filter(i -> data.accessible_areas_data[i] == 2 && data.habitat_binary_data[i] == 0)
+                .filter(i -> data.accessible_areas_data[i] == accessibleVal && data.habitat_binary_data[i] == 0)
                 .map(i -> grid.getPartialIndex(i))
                 .toArray();
 
@@ -151,7 +150,7 @@ public class BaseProblem {
         System.out.println("IIC initial = " + IIC_initial);
         Solver solver = reserveModel.getChocoSolver();
         solver.showStatistics();
-        solver.setSearch(Search.minDomUBSearch(reserveModel.getSites()));
+        solver.setSearch(Search.domOverWDegSearch(reserveModel.getSites()));
         solver.findOptimalSolution(IIC, true);
     }
 
