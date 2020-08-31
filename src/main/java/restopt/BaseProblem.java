@@ -13,7 +13,6 @@ import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.objects.setDataStructures.SetType;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -27,7 +26,7 @@ public class BaseProblem {
     public ReserveModel reserveModel;
     public int accessibleVal;
 
-    public IntVar minRestore;
+    public IntVar minRestore, maxRestorable;
     public IntVar MESH;
     public IntVar IIC;
 
@@ -123,7 +122,7 @@ public class BaseProblem {
         reserveModel.maxDiameterSpatial(restore, maxDiameter).post();
     }
 
-    public void maximizeMESH(int precision, String exportPath) throws IOException {
+    public void maximizeMESH(int precision, String outputPath) throws IOException {
         MESH = reserveModel.effectiveMeshSize(potentialHabitat, precision, true);
         double MESH_initial = FragmentationIndices.effectiveMeshSize(
                 potentialHabitat.getSetVar().getGLB(),
@@ -131,13 +130,25 @@ public class BaseProblem {
         );
         System.out.println("MESH initial = " + MESH_initial);
         Solver solver = reserveModel.getChocoSolver();
-        solver.showStatistics();
+        solver.showShortStatistics();
         solver.setSearch(Search.minDomUBSearch(reserveModel.getSites()));
+        long t = System.currentTimeMillis();
         Solution solution = solver.findOptimalSolution(MESH, true);
-        exportSolutionRaster(exportPath, solution);
+        String[][] solCharacteristics = new String[][]{
+                {"Minimum area to restore", "Maximum restorable area", "no. planning units", "initial MESH value", "optimal MESH value", "solving time (ms)"},
+                {
+                    String.valueOf(solution.getIntVal(minRestore)),
+                    String.valueOf(solution.getIntVal(maxRestorable)),
+                    String.valueOf(solution.getSetVal(restore.getSetVar()).length),
+                    String.valueOf(1.0 * Math.round(MESH_initial * Math.pow(10, precision)) / Math.pow(10, precision)),
+                    String.valueOf((1.0 * solution.getIntVal(MESH)) / Math.pow(10, precision)),
+                    String.valueOf((System.currentTimeMillis() - t))
+                }
+        };
+        exportSolution(outputPath, solution, solCharacteristics);
     }
 
-    public void maximizeIIC(int precision) {
+    public void maximizeIIC(int precision, String outputPath) throws IOException {
         IIC = reserveModel.integralIndexOfConnectivity(
                 potentialHabitat,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
@@ -153,25 +164,42 @@ public class BaseProblem {
         Solver solver = reserveModel.getChocoSolver();
         solver.showStatistics();
         solver.setSearch(Search.domOverWDegSearch(reserveModel.getSites()));
-        solver.findOptimalSolution(IIC, true);
+        long t = System.currentTimeMillis();
+        Solution solution = solver.findOptimalSolution(IIC, true);
+        String[][] solCharacteristics = new String[][]{
+                {"Minimum area to restore", "Maximum restorable area", "no. planning units", "initial IIC value", "optimal IIC value", "solving time (ms)"},
+                {
+                        String.valueOf(solution.getIntVal(minRestore)),
+                        String.valueOf(solution.getIntVal(maxRestorable)),
+                        String.valueOf(solution.getSetVal(restore.getSetVar()).length),
+                        String.valueOf(1.0 * Math.round(IIC_initial * Math.pow(10, precision)) / Math.pow(10, precision)),
+                        String.valueOf((1.0 * solution.getIntVal(IIC)) / Math.pow(10, precision)),
+                        String.valueOf((System.currentTimeMillis() - t))
+                }
+        };
+        exportSolution(outputPath, solution, solCharacteristics);
     }
 
     public void postRestorableConstraint(int minAreaToRestore, int maxAreaToRestore, int cellArea, double minProportion) {
         // Minimum area to ensure every site to >= proportion
         assert minProportion >= 0 && minProportion <= 1;
         int[] minArea = new int[grid.getNbCells()];
+        int[] maxRestorableArea = new int[grid.getNbCells()];
         int threshold = (int) Math.ceil(cellArea - cellArea * minProportion);
         for (int i = 0; i < grid.getNbCells(); i++) {
+            maxRestorableArea[i] = data.restorable_area_data[grid.getCompleteIndex(i)];
             int restorable = data.restorable_area_data[grid.getCompleteIndex(i)];
-            minArea[i] = restorable <= threshold ? 0 : restorable - 7;
+            minArea[i] = restorable <= threshold ? 0 : restorable - threshold;
 
         }
         // Post restorable area constraint
         minRestore = reserveModel.getChocoModel().intVar(minAreaToRestore, maxAreaToRestore);
+        maxRestorable = reserveModel.getChocoModel().intVar(0, maxAreaToRestore * cellArea);
         reserveModel.getChocoModel().sumElements(restore.getSetVar(), minArea, minRestore).post();
+        reserveModel.getChocoModel().sumElements(restore.getSetVar(), maxRestorableArea, maxRestorable).post();
     }
 
-    public void exportSolutionRaster(String exportPath, Solution solution) throws IOException {
+    public void exportSolution(String exportPath, Solution solution, String[][] characteristics) throws IOException {
         int[] sites = Arrays.stream(reserveModel.getSites()).mapToInt(v -> solution.getIntVal(v)).toArray();
         SolutionExporter exporter = new SolutionExporter(
                 this,
@@ -180,7 +208,7 @@ public class BaseProblem {
                 exportPath + ".cvs",
                 exportPath + ".tif"
         );
-//        exporter.exportCompleteCsv();
+        exporter.exportCharacteristics(characteristics);
         exporter.generateRaster();
     }
 }

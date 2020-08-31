@@ -48,6 +48,15 @@ public class Main {
     String restorableBinaryRasterPath;
 
     @CommandLine.Option(
+            names = "-o",
+            description = "Output path for generated files. Two files are generated: one raster (.tif) representing" +
+                    "the solution, and a csv file containing its characteristics. File extensions are" +
+                    "automatically added to the end of the output path.",
+            required = true
+    )
+    String outputPath;
+
+    @CommandLine.Option(
             names = "-cellArea",
             description = "Total area of a cell.",
             required = true
@@ -132,12 +141,6 @@ public class Main {
         assert main.maxRestore > 0;
         assert main.minProportion > 0 && main.minProportion <= 1;
 
-//        Data data = new Data(
-//                "/home/djusteau/testRestopt/habitat.tif",
-//                "/home/djusteau/testRestopt/accessible.tif",
-//                "/home/djusteau/testRestopt/restorable.tif"
-//        );
-
         Data data = new Data(
                 main.habitatBinaryRasterPath,
                 main.accessibleBinaryRasterPath,
@@ -149,10 +152,10 @@ public class Main {
         baseProblem.postCompactnessConstraint(main.maxDiam);
         baseProblem.postRestorableConstraint(main.minRestore, main.maxRestore, main.cellArea, main.minProportion);
         if (main.objective == Objective.MESH) {
-            baseProblem.maximizeMESH(main.precision, "/home/djusteau/test2");
+            baseProblem.maximizeMESH(main.precision, main.outputPath);
         } else {
             if (main.objective == Objective.IIC) {
-                baseProblem.maximizeIIC(main.precision);
+                baseProblem.maximizeIIC(main.precision, main.outputPath);
             }
         }
     }

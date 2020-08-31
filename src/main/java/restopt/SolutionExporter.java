@@ -62,6 +62,24 @@ public class SolutionExporter {
         }
     }
 
+    public void exportCharacteristics(String[][] characteristic) throws IOException {
+        BufferedWriter br = new BufferedWriter(new FileWriter(csvDest));
+        StringBuilder sb = new StringBuilder();
+        for (String[] line : characteristic) {
+            int i = 0;
+            for (String s : line) {
+                i++;
+                sb.append(s);
+                if (i < line.length) {
+                    sb.append(",");
+                }
+            }
+            sb.append("\n");
+        }
+        br.write(sb.toString());
+        br.close();
+    }
+
     public void generateRaster() throws IOException {
         File file = new File(template);
         GeoTiffReader reader = new GeoTiffReader(file);
