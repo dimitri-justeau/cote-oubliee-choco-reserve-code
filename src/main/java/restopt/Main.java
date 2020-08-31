@@ -149,7 +149,7 @@ public class Main {
         baseProblem.postCompactnessConstraint(main.maxDiam);
         baseProblem.postRestorableConstraint(main.minRestore, main.maxRestore, main.cellArea, main.minProportion);
         if (main.objective == Objective.MESH) {
-            baseProblem.maximizeMESH(main.precision);
+            baseProblem.maximizeMESH(main.precision, "/home/djusteau/test2");
         } else {
             if (main.objective == Objective.IIC) {
                 baseProblem.maximizeIIC(main.precision);

@@ -15,6 +15,7 @@ import org.chocosolver.util.objects.setDataStructures.SetType;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class BaseProblem {
@@ -109,7 +110,7 @@ public class BaseProblem {
 
         this.reserveModel = new ReserveModel(
                 grid,
-                new Region[] {habitat, nonHabitat, restore},
+                new Region[] {nonHabitat, habitat, restore},
                 new ComposedRegion[] {potentialHabitat}
         );
     }
@@ -122,7 +123,7 @@ public class BaseProblem {
         reserveModel.maxDiameterSpatial(restore, maxDiameter).post();
     }
 
-    public void maximizeMESH(int precision) {
+    public void maximizeMESH(int precision, String exportPath) throws IOException {
         MESH = reserveModel.effectiveMeshSize(potentialHabitat, precision, true);
         double MESH_initial = FragmentationIndices.effectiveMeshSize(
                 potentialHabitat.getSetVar().getGLB(),
@@ -132,7 +133,8 @@ public class BaseProblem {
         Solver solver = reserveModel.getChocoSolver();
         solver.showStatistics();
         solver.setSearch(Search.minDomUBSearch(reserveModel.getSites()));
-        solver.findOptimalSolution(MESH, true);
+        Solution solution = solver.findOptimalSolution(MESH, true);
+        exportSolutionRaster(exportPath, solution);
     }
 
     public void maximizeIIC(int precision) {
@@ -169,16 +171,16 @@ public class BaseProblem {
         reserveModel.getChocoModel().sumElements(restore.getSetVar(), minArea, minRestore).post();
     }
 
-    public void exportSolutionRaster(String exportPath, int[] solution) throws IOException {
-        BufferedWriter br = null;
-        SolutionExporter exp = new SolutionExporter(this, solution, exportPath);
-        exp.generateRaster(exportPath);
-    }
-
-    public void exportSolutionRaster(String exportPath, Solution sol) throws IOException {
-        int[] solution = IntStream.range(0, reserveModel.getSites().length)
-                .map(j -> sol.getIntVal(reserveModel.getSites()[j]))
-                .toArray();
-        exportSolutionRaster(exportPath, solution);
+    public void exportSolutionRaster(String exportPath, Solution solution) throws IOException {
+        int[] sites = Arrays.stream(reserveModel.getSites()).mapToInt(v -> solution.getIntVal(v)).toArray();
+        SolutionExporter exporter = new SolutionExporter(
+                this,
+                sites,
+                data.habitatBinaryRasterPath,
+                exportPath + ".cvs",
+                exportPath + ".tif"
+        );
+//        exporter.exportCompleteCsv();
+        exporter.generateRaster();
     }
 }
