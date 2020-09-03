@@ -1,3 +1,17 @@
+## Code repository of the Côte Oubliée – ‘Woen Vùù – Pwa Pereeù reforestation case study
+
+This repository contains the code that was used for the Côte Oubliée – ‘Woen Vùù – Pwa Pereeù reforestation case study in the article *Constrained optimization of landscape indices in conservation planning to support ecological restoration in New Caledonia*, by Dimitri Justeau-Allaire<sup>1,2,3</sup>, Ghislain Vieilledent<sup>1,3</sup>, Nicolas Rinck<sup>4</sup>, Philippe Vismara<sup>5,6</sup>, Xavier Lorca<sup>7</sup>, and Philippe Birnbaum<sup>1,2,3</sup>.
+
+1 : CIRAD, UMR AMAP, Montpellier, France\
+2 : Institut Agronomique néo-Calédonien (IAC), Nouméa, New Caledonia\
+3 : AMAP, Univ Montpellier, CIRAD, CNRS, INRAE, IRD, Montpellier, France\
+4 : DDDT, Province Sud, Nouméa, New Caledonia\
+5 : MISTEA, Montpellier SupAgro, INRAE, Univ Montpellier, Montpellier, France\
+6 : LIRMM, Univ Montpellier, CNRS, Montpellier, France\
+7 : Centre de Génie Industriel, IMT Mines Albi, Albi, France
+
+The code that was used in the case study is provided in /src/main/java/baseproblem and /src/main/java/solve. The data is located in /src/main/resources/data. The package /src/main/java/restopt contains the source code of the restopt command-line tool that was developed as demonstrator, which is described next. This repository relies on the [choco-reserve](https://github.com/dimitri-justeau/choco-reserve) framework (under development and not yet released a wide audience software package), which itself relies on the [Choco](https://github.com/chocoteam/choco-solver) constraint programming solver (an open-source and state-of-the-art constraint programming solver, which is actively maintained). 
+
 ### restopt command-line jar 
 
 As a demonstrator, we packaged a single-region version of the problem (but with the possibility to control the number of connected components) into an executable command-line jar. To execute this jar, the Java Runtime Environment (JRE) is needed (version 8 minimum), download and installation instructions for the JRE are available here : https://www.oracle.com/java/technologies/javase-downloads.html, or here : https://openjdk.java.net/install/ .
