@@ -5,7 +5,7 @@ import picocli.CommandLine;
 import java.io.IOException;
 
 @CommandLine.Command(
-        name="Restopt",
+        name="restopt",
         description="Find connected and compact areas maximizing the effective mesh size (MESH) or the integral index of connectivity (IIC).",
         mixinStandardHelpOptions = true,
         version="1.0"
@@ -79,7 +79,7 @@ public class Main {
 
     @CommandLine.Option(
             names = "-minRestore",
-            description = "Minimum area to restore (between 0 and cellArea).",
+            description = "Minimum area to restore (between 0 and maxRestore).",
             required = true
     )
     int minRestore;
@@ -93,7 +93,7 @@ public class Main {
 
     @CommandLine.Option(
             names = "-maxRestore",
-            description = "Maximum area to restore (between 1 and cellArea).",
+            description = "Maximum area to restore (greater than minRestore).",
             required = true
     )
     int maxRestore;
@@ -108,7 +108,8 @@ public class Main {
 
     @CommandLine.Option(
             names = "-timeLimit",
-            description = "Time limit for optimization (in seconds)."
+            description = "Time limit for optimization (in seconds).",
+            defaultValue = "0"
     )
     int timeLimit;
 
@@ -152,10 +153,10 @@ public class Main {
         baseProblem.postCompactnessConstraint(main.maxDiam);
         baseProblem.postRestorableConstraint(main.minRestore, main.maxRestore, main.cellArea, main.minProportion);
         if (main.objective == Objective.MESH) {
-            baseProblem.maximizeMESH(main.precision, main.outputPath);
+            baseProblem.maximizeMESH(main.precision, main.outputPath, main.timeLimit, main.lns);
         } else {
             if (main.objective == Objective.IIC) {
-                baseProblem.maximizeIIC(main.precision, main.outputPath);
+                baseProblem.maximizeIIC(main.precision, main.outputPath, main.timeLimit, main.lns);
             }
         }
     }

@@ -9,12 +9,15 @@ import chocoreserve.util.connectivity.ConnectivityIndices;
 import chocoreserve.util.fragmentation.FragmentationIndices;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.limits.TimeCounter;
+import org.chocosolver.solver.search.loop.lns.INeighborFactory;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.objects.setDataStructures.SetType;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.InputMismatchException;
 import java.util.stream.IntStream;
 
 public class BaseProblem {
@@ -122,18 +125,31 @@ public class BaseProblem {
         reserveModel.maxDiameterSpatial(restore, maxDiameter).post();
     }
 
-    public void maximizeMESH(int precision, String outputPath) throws IOException {
+    public void maximizeMESH(int precision, String outputPath, int timeLimit, boolean lns) throws IOException {
         MESH = reserveModel.effectiveMeshSize(potentialHabitat, precision, true);
         double MESH_initial = FragmentationIndices.effectiveMeshSize(
                 potentialHabitat.getSetVar().getGLB(),
                 grid.getNbCells()
         );
-        System.out.println("MESH initial = " + MESH_initial);
+        System.out.println("\nMESH initial = " + MESH_initial + "\n");
         Solver solver = reserveModel.getChocoSolver();
         solver.showShortStatistics();
         solver.setSearch(Search.minDomUBSearch(reserveModel.getSites()));
+        if (lns) {
+            if (timeLimit == 0) {
+                throw new InputMismatchException("LNS cannot be used without a time limit, as it breaks completeness " +
+                        "and is not guaranteed to terminate without a limit.");
+            }
+            solver.setLNS(INeighborFactory.random(reserveModel.getSites()));
+        }
         long t = System.currentTimeMillis();
-        Solution solution = solver.findOptimalSolution(MESH, true);
+        Solution solution;
+        if (timeLimit > 0) {
+            TimeCounter timeCounter = new TimeCounter(reserveModel.getChocoModel(), (long) (timeLimit * 1e9));
+            solution = solver.findOptimalSolution(MESH, true, timeCounter);
+        } else {
+            solution = solver.findOptimalSolution(MESH, true);
+        }
         String[][] solCharacteristics = new String[][]{
                 {"Minimum area to restore", "Maximum restorable area", "no. planning units", "initial MESH value", "optimal MESH value", "solving time (ms)"},
                 {
@@ -145,10 +161,19 @@ public class BaseProblem {
                     String.valueOf((System.currentTimeMillis() - t))
                 }
         };
+        System.out.println("\n--- Best solution ---\n");
+        System.out.println("Minimum area to restore : " + solCharacteristics[1][0]);
+        System.out.println("Maximum restorable area : " + solCharacteristics[1][1]);
+        System.out.println("No. planning units : " + solCharacteristics[1][2]);
+        System.out.println("Initial MESH value : " + solCharacteristics[1][3]);
+        System.out.println("Optimal MESH value : " + solCharacteristics[1][4]);
+        System.out.println("Solving time (ms) : " + solCharacteristics[1][5]);
+        System.out.println("\nRaster exported at " + outputPath + ".tif");
+        System.out.println("Solution characteristics exported at " + outputPath + ".csv");
         exportSolution(outputPath, solution, solCharacteristics);
     }
 
-    public void maximizeIIC(int precision, String outputPath) throws IOException {
+    public void maximizeIIC(int precision, String outputPath, int timeLimit, boolean lns) throws IOException {
         IIC = reserveModel.integralIndexOfConnectivity(
                 potentialHabitat,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
@@ -160,12 +185,25 @@ public class BaseProblem {
                 grid,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED
         );
-        System.out.println("IIC initial = " + IIC_initial);
+        System.out.println("\nIIC initial = " + IIC_initial + "\n");
         Solver solver = reserveModel.getChocoSolver();
-        solver.showStatistics();
-        solver.setSearch(Search.domOverWDegSearch(reserveModel.getSites()));
+        solver.showShortStatistics();
+        solver.setSearch(Search.minDomUBSearch(reserveModel.getSites()));
+        if (lns) {
+            if (timeLimit == 0) {
+                throw new InputMismatchException("LNS cannot be used without a time limit, as it breaks completeness " +
+                        "and is not guaranteed to terminate without a limit.");
+            }
+            solver.setLNS(INeighborFactory.random(reserveModel.getSites()));
+        }
         long t = System.currentTimeMillis();
-        Solution solution = solver.findOptimalSolution(IIC, true);
+        Solution solution;
+        if (timeLimit > 0) {
+            TimeCounter timeCounter = new TimeCounter(reserveModel.getChocoModel(), (long) (timeLimit * 1e9));
+            solution = solver.findOptimalSolution(IIC, true, timeCounter);
+        } else {
+             solution = solver.findOptimalSolution(IIC, true);
+        }
         String[][] solCharacteristics = new String[][]{
                 {"Minimum area to restore", "Maximum restorable area", "no. planning units", "initial IIC value", "optimal IIC value", "solving time (ms)"},
                 {
@@ -177,6 +215,15 @@ public class BaseProblem {
                         String.valueOf((System.currentTimeMillis() - t))
                 }
         };
+        System.out.println("\n--- Best solution ---\n");
+        System.out.println("Minimum area to restore : " + solCharacteristics[1][0]);
+        System.out.println("Maximum restorable area : " + solCharacteristics[1][1]);
+        System.out.println("No. planning units : " + solCharacteristics[1][2]);
+        System.out.println("Initial IIC value : " + solCharacteristics[1][3]);
+        System.out.println("Optimal IIC value : " + solCharacteristics[1][4]);
+        System.out.println("Solving time (ms) : " + solCharacteristics[1][5]);
+        System.out.println("\nRaster exported at " + outputPath + ".tif");
+        System.out.println("Solution characteristics exported at " + outputPath + ".csv");
         exportSolution(outputPath, solution, solCharacteristics);
     }
 

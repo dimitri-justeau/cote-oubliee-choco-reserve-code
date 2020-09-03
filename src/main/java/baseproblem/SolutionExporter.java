@@ -87,11 +87,4 @@ public class SolutionExporter {
             System.err.println(e.toString());
         }
     }
-
-    public static void main(String[] args) throws IOException {
-        BaseProblem baseProblem = new BaseProblem("IICUnia");
-        SolutionExporter exp = new SolutionExporter(baseProblem.resultsPath, "UniaOptimalIIC_3" + ".csv");
-        exp.exportCompleteCsv();
-        exp.generateRaster();
-    }
 }
