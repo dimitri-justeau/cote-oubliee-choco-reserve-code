@@ -1,6 +1,6 @@
 ## Code repository of the Côte Oubliée – ‘Woen Vùù – Pwa Pereeù reforestation case study
 
-This repository contains the code that was used for the Côte Oubliée – ‘Woen Vùù – Pwa Pereeù reforestation case study in the article *Constrained optimization of landscape indices in conservation planning to support ecological restoration in New Caledonia*, by Dimitri Justeau-Allaire<sup>1,2,3</sup>, Ghislain Vieilledent<sup>1,3</sup>, Nicolas Rinck<sup>4</sup>, Philippe Vismara<sup>5,6</sup>, Xavier Lorca<sup>7</sup>, and Philippe Birnbaum<sup>1,2,3</sup>.
+This repository contains the code that was used for the Côte Oubliée – ‘Woen Vùù – Pwa Pereeù reforestation case study in the article "*Constrained optimization of landscape indices in conservation planning to support ecological restoration in New Caledonia*", by Dimitri Justeau-Allaire<sup>1,2,3</sup>, Ghislain Vieilledent<sup>1,3</sup>, Nicolas Rinck<sup>4</sup>, Philippe Vismara<sup>5,6</sup>, Xavier Lorca<sup>7</sup>, and Philippe Birnbaum<sup>1,2,3</sup>.
 
 1 : CIRAD, UMR AMAP, Montpellier, France\
 2 : Institut Agronomique néo-Calédonien (IAC), Nouméa, New Caledonia\
