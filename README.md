@@ -16,6 +16,8 @@ The code that was used in the case study is provided in /src/main/java/baseprobl
 
 As a demonstrator, we packaged a single-region version of the problem (but with the possibility to control the number of connected components) into an executable command-line jar. To execute this jar, the Java Runtime Environment (JRE) is needed (version 8 minimum), download and installation instructions for the JRE are available here: https://www.oracle.com/java/technologies/javase-downloads.html, or here: https://openjdk.java.net/install/ .
 
+restop is available at this address: https://github.com/dimitri-justeau/cote-oubliee-choco-reserve-code/releases/tag/1.0
+
 Note that this program is not yet intended to be a wide audience software release. It is the result of a research project, and we plan to optimize the performances of the current implementation and invest more time in software engineering to provide a wide audience software package in the future, usable from R and/or Python.
 
 To execute restopt, you need three rasters that must have the same extents and resolutions:
