@@ -11,9 +11,9 @@ import java.util.Arrays;
 public class Data {
 
     public static final String BASEPATH = Data.class.getResource("/data").getPath();
-    public static final String FOREST_BINARY_RASTER_PATH = Paths.get(BASEPATH, "forest_binary_480x480_0.7_wgs84_full_extent_cut.tif").toString();
-    public static final String RESTORABLE_AREA_RASTER_PATH = Paths.get(BASEPATH, "restaurable_area_480x480_wgs84_ha.tif").toString();
-    public static final String BUFFER_PISTES_PATH = Paths.get(BASEPATH, "buffer_1000m_wgs84_all_touched.tif").toString();
+    public static final String FOREST_BINARY_RASTER_PATH = Paths.get(BASEPATH, "forest_binary_480x480_0.7_wgs84.tif").toString();
+    public static final String RESTORABLE_AREA_RASTER_PATH = Paths.get(BASEPATH, "restorable_area_480x480_wgs84_ha.tif").toString();
+    public static final String BUFFER_PISTES_PATH = Paths.get(BASEPATH, "buffer_1000m_wgs84.tif").toString();
 
     public static final int BORENDY_RASTER_VALUE = 1;
     public static final int UNIA_RASTER_VALUE = 2;

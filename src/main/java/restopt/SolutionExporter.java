@@ -2,24 +2,17 @@ package restopt;
 
 import chocoreserve.grid.regular.square.PartialRegularSquareGrid;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridCoverageBuilder;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.opengis.parameter.GeneralParameterValue;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.awt.image.renderable.RenderedImageFactory;
 import java.io.*;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
 
 public class SolutionExporter {
-
-//    public static final String PYTHON_SCRIPT = SolutionExporter.class.getResource("../results").getPath() + "/generate_raster.py";
 
     public String csvDest, rastDest, template;
     public int[] solution;
@@ -83,7 +76,7 @@ public class SolutionExporter {
     public void generateRaster() throws IOException {
         File file = new File(template);
         GeoTiffReader reader = new GeoTiffReader(file);
-        GridCoverage2D grid = reader.read((GeneralParameterValue[])null);
+        GridCoverage2D grid = reader.read(null);
         int height = grid.getRenderedImage().getHeight();
         int width = grid.getRenderedImage().getWidth();
 

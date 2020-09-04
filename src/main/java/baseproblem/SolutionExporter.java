@@ -34,16 +34,6 @@ public class SolutionExporter {
 
         PartialRegularSquareGrid grid = new PartialRegularSquareGrid(data.height, data.width, outPixels);
 
-        int[] nonForestPixels = IntStream.range(0, forest_data.length)
-                .filter(i -> forest_data[i] == 0 ? true : false)
-                .map(i -> grid.getPartialIndex(i))
-                .toArray();
-
-        int[] forestPixels = IntStream.range(0, forest_data.length)
-                .filter(i -> forest_data[i] == 1 ? true : false)
-                .map(i -> grid.getPartialIndex(i))
-                .toArray();
-
         completeData = new int[forest_data.length];
         for (int i = 0; i < completeData.length; i++) {
             if (grid.getDiscardSet().contains(i)) {
@@ -55,7 +45,7 @@ public class SolutionExporter {
     }
 
     public void exportCompleteCsv() {
-        BufferedWriter br = null;
+        BufferedWriter br;
         try {
             br = new BufferedWriter(new FileWriter(Paths.get(resultPath, "complete_" + fileName).toString()));
             StringBuilder sb = new StringBuilder();

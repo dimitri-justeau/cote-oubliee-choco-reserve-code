@@ -7,7 +7,6 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
@@ -25,7 +24,7 @@ import java.util.stream.IntStream;
 
 public class MaximizeMESH {
 
-    public static void main(String[] args) throws IOException, ContradictionException {
+    public static void main(String[] args) throws IOException {
 
         long t = System.currentTimeMillis();
 
@@ -43,27 +42,6 @@ public class MaximizeMESH {
 
         Map<Integer, List<Solution>> borendySols = new HashMap<>();
         Map<Integer, Integer> borendyFront = new HashMap<>();
-//        borendyFront.put(90,1080686);
-//        borendyFront.put(91,1080686);
-//        borendyFront.put(92,1080830);
-//        borendyFront.put(93,1080830);
-//        borendyFront.put(94,1080830);
-//        borendyFront.put(95,1080830);
-//        borendyFront.put(96,1080830);
-//        borendyFront.put(97,1080830);
-//        borendyFront.put(98,1080830);
-//        borendyFront.put(99,1080830);
-//        borendyFront.put(100,1080830);
-//        borendyFront.put(101,1080830);
-//        borendyFront.put(102,1080974);
-//        borendyFront.put(103,1080974);
-//        borendyFront.put(104,1080974);
-//        borendyFront.put(105,1080974);
-//        borendyFront.put(106,1080846);
-//        borendyFront.put(107,1080974);
-//        borendyFront.put(108,1080974);
-//        borendyFront.put(109,1080830);
-//        borendyFront.put(110,1080830);
 
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
@@ -99,27 +77,6 @@ public class MaximizeMESH {
         solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
-//        uniaFront.put(90,1089607);
-//        uniaFront.put(91,1089607);
-//        uniaFront.put(92,1089607);
-//        uniaFront.put(93,1090424);
-//        uniaFront.put(94,1089607);
-//        uniaFront.put(95,1089607);
-//        uniaFront.put(96,1090424);
-//        uniaFront.put(97,1090424);
-//        uniaFront.put(98,1090426);
-//        uniaFront.put(99,1090424);
-//        uniaFront.put(100,1090424);
-//        uniaFront.put(101,1090424);
-//        uniaFront.put(102,1090426);
-//        uniaFront.put(103,1089607);
-//        uniaFront.put(104,1090426);
-//        uniaFront.put(105,1090426);
-//        uniaFront.put(106,1091245);
-//        uniaFront.put(107,1090426);
-//        uniaFront.put(108,1090426);
-//        uniaFront.put(109,1090424);
-//        uniaFront.put(110,1091244);
 
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
@@ -273,7 +230,6 @@ public class MaximizeMESH {
         // Export occurrences count
         double[] completeOccurrences = new double[problemBorendy.grid.getNbCols() * problemBorendy.grid.getNbRows()];
         for (int j = 0; j < completeOccurrences.length; j++) {
-//            completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[j] / nbOptimalSolutions;
             if (problemBorendy.grid.getDiscardSet().contains(j)) {
                 completeOccurrences[j] = 0;
             } else {

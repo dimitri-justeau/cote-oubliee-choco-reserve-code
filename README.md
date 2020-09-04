@@ -10,49 +10,49 @@ This repository contains the code that was used for the Côte Oubliée – ‘Wo
 6 : LIRMM, Univ Montpellier, CNRS, Montpellier, France.\
 7 : Centre de Génie Industriel, IMT Mines Albi, Albi, France.
 
-The code that was used in the case study is provided in /src/main/java/baseproblem and /src/main/java/solve. The data is located in /src/main/resources/data. The package /src/main/java/restopt contains the source code of the restopt command-line tool that was developed as demonstrator, which is described next. This repository relies on the [choco-reserve](https://github.com/dimitri-justeau/choco-reserve) framework (under development and not yet released a wide audience software package), which itself relies on the [Choco](https://github.com/chocoteam/choco-solver) constraint programming solver (an open-source and state-of-the-art constraint programming solver, which is actively maintained). 
+The code that was used in the case study is provided in /src/main/java/baseproblem and /src/main/java/solve. The data is located in /src/main/resources/data. The package /src/main/java/restopt contains the source code of the restopt command-line tool that was developed as a demonstrator, which is described next. This repository relies on the [choco-reserve](https://github.com/dimitri-justeau/choco-reserve) framework (under development and not yet released a wide audience software package), which itself relies on the [Choco](https://github.com/chocoteam/choco-solver) constraint programming solver (an open-source and state-of-the-art constraint programming solver, which is actively maintained). 
 
 ### restopt command-line jar 
 
-As a demonstrator, we packaged a single-region version of the problem (but with the possibility to control the number of connected components) into an executable command-line jar. To execute this jar, the Java Runtime Environment (JRE) is needed (version 8 minimum), download and installation instructions for the JRE are available here : https://www.oracle.com/java/technologies/javase-downloads.html, or here : https://openjdk.java.net/install/ .
+As a demonstrator, we packaged a single-region version of the problem (but with the possibility to control the number of connected components) into an executable command-line jar. To execute this jar, the Java Runtime Environment (JRE) is needed (version 8 minimum), download and installation instructions for the JRE are available here: https://www.oracle.com/java/technologies/javase-downloads.html, or here: https://openjdk.java.net/install/ .
 
 Note that this program is not yet intended to be a wide audience software release. It is the result of a research project, and we plan to optimize the performances of the current implementation and invest more time in software engineering to provide a wide audience software package in the future, usable from R and/or Python.
 
 To execute restopt, you need three rasters that must have the same extents and resolutions:
 
-  - `-habitat` : a binary habitat raster, with value 1 for habitat, 0 for non-habitat, and -1 for cells that must not be considered in the problem. It is important to discard these cells as they can alter the value of the indices, slow down the solving time, and increase the amount of memory needed.
+  - `-habitat`: a binary habitat raster, with value 1 for habitat, 0 for non-habitat, and -1 for cells that must not be considered in the problem. It is important to discard these cells as they can alter the value of the indices, slow down the solving time, and increase the amount of memory needed.
    
-  - `-restorable` : a quantitative raster corresponding to the amount of restorable area in each cell. The values must be integer between 0 and `cellArea`, a parameter which corresponds to the total area of a raster cell.
+  - `-restorable`: a quantitative raster corresponding to the amount of restorable area in each cell. The values must be integer between 0 and `cellArea`, a parameter which corresponds to the total area of a raster cell.
    
-  - `accessible` : a raster corresponding to the accessible cells (those that can be considered for restoration). These cells are identified by the value of the parameter `accessibleValue`. If every cells are accessible, use the binary habitat raster with `accessibleValue = 1`.
+  - `accessible`: a raster corresponding to the accessible cells (those that can be considered for restoration). These cells are identified by the value of the parameter `accessibleValue`. If every cell are accessible, use the binary habitat raster with `accessibleValue = 1`.
 
 The following parameters are also required:
 
-  - `-objective` : the index to maximize, `MESH` or `IIC`.
+  - `-objective`: the index to maximize, `MESH` or `IIC`.
   
-  - `-cellArea` : the total area of a raster cell.
+  - `-cellArea`: the total area of a raster cell.
   
-  - `-o` : the output path for generated files. Use a path without extension (e.g. `/home/user/restoptResults/result`), the program will generate a tif raster file of the solution (e.g. `/home/user/restoptResults/result.tif`), and a csv file containing the characteristics of the solution (e.g. `/home/user/restoptResults/result.csv`).
+  - `-o`: the output path for generated files. Use a path without extension (e.g. `/home/user/restoptResults/result`), the program will generate a tif raster file of the solution (e.g. `/home/user/restoptResults/result.tif`), and a csv file containing the characteristics of the solution (e.g. `/home/user/restoptResults/result.csv`).
   
-  - `-maxDiam` : the maximum allowed diameter of the restored area, in cell edge length.
+  - `-maxDiam`: the maximum allowed diameter of the restored area, in cell edge length.
   
-  - `-minRestore` : the minimum area to restore (between 0 and `maxRestore`), in surface units (must be the same as the restorable area raster).
+  - `-minRestore`: the minimum area to restore (between 0 and `maxRestore`), in surface units (must be the same as the restorable area raster).
   
-  - `-maxRestore` : the maximum area to restore (greater than `minRestore`).
+  - `-maxRestore`: the maximum area to restore (greater than `minRestore`).
   
-  - `-minProportion` : the minimum habitat proportion needed to consider a cell as restored (between 0 and 1).
+  - `-minProportion`: the minimum habitat proportion needed to consider a cell as restored (between 0 and 1).
   
 The following parameters are optional :
 
-  - `-maxNbCC` : the maximum number of allowed connected components in the restored region. Default is 1, i.e. fully connected.
+  - `-maxNbCC`: the maximum number of allowed connected components in the restored region. Default is 1, i.e. fully connected.
   
-  - `-precision` : the solver optimizes integer variables, thus the maximized index is multiplied by 10e<precision> and after optimization restored as a real rounded to <precision> numbers after the decimal point. Default is 4.
+  - `-precision`: the solver optimizes integer variables, thus the maximized index is multiplied by 10e<precision> and after optimization restored as a real rounded to <precision> numbers after the decimal point. Default is 4.
   
-  - `-accessibleValue` : the value of accessible cells in the corresponding raster. Default is 1.
+  - `-accessibleValue`: the value of accessible cells in the corresponding raster. Default is 1.
   
-  - `-timeLimit` : time limit for optimization, in seconds. Default is no time limit (terminate when a solution is proved optimal).
+  - `-timeLimit`: time limit for optimization, in seconds. Default is no time limit (terminate when a solution is proved optimal).
   
-  - `-lns` : if set, use a large neighborhood search (LNS) in the solving process. LNS is a heuristic methods that can speed up the optimization process, but using it breaks the completeness of the search, thus is not guaranteed to terminate with the optimal solution. LNS must be used with a time limit, and can be useful for large problem where getting optimality proof is intractable. See https://www.researchgate.net/profile/Stefan_Ropke/publication/226905030_Large_Neighborhood_Search/links/0912f50f933ab8b82f000000/Large-Neighborhood-Search.pdf for more details.
+  - `-lns`: if set, use a large neighbourhood search (LNS) in the solving process. LNS is a heuristic method that can speed up the optimization process, but using it breaks the completeness of the search, then is not guaranteed to terminate with the optimal solution. LNS must be used with a time limit and can be useful for large problems where getting optimality proof is intractable. See https://www.researchgate.net/profile/Stefan_Ropke/publication/226905030_Large_Neighborhood_Search/links/0912f50f933ab8b82f000000/Large-Neighborhood-Search.pdf for more details.
 
 Input data corresponding to the article case study is provided in the restopt download archive. In the accessible areas raster, value 1 corresponds to accessible cells in Borendy, and value 2 corresponds to accessible cells in Unia. Below is a usage example for finding the optimal connected and compact (maximum diameter ~1500 m) area to maximize MESH in Unia:
 

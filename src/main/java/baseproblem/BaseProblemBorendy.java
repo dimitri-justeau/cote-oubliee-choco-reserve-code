@@ -25,7 +25,7 @@ public class BaseProblemBorendy {
     public SpatialGraphVar potentialForestGraphVar;
     public ReserveModel reserveModel;
 
-    public Region nonForest, forest, reforestUnia, reforestBorendy;
+    public Region nonForest, forest, reforestBorendy;
     public ComposedRegion potentialForest;
 
     public IntVar  minReforestAreaBorendy,maxReforestAreaBorendy;
@@ -133,7 +133,6 @@ public class BaseProblemBorendy {
         int[] maxRestorableArea = new int[nbSites];
         for (int i = 0; i < nbSites; i++) {
             int restorable = data.restorable_area_data[grid.getCompleteIndex(i)];
-//            int restorable = data.restorable_area_data[i];
             minArea[i] = restorable <= 7 ? 0 : restorable - 7;
             maxRestorableArea[i] = restorable;
         }

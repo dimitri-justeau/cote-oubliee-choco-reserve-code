@@ -4,14 +4,10 @@ import baseproblem.BaseProblemBorendy;
 import baseproblem.BaseProblemUnia;
 import chocoreserve.grid.neighborhood.Neighborhoods;
 import chocoreserve.util.connectivity.ConnectivityIndices;
-import chocoreserve.util.fragmentation.FragmentationIndices;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.loop.monitors.IMonitorInitialize;
-import org.chocosolver.solver.search.loop.monitors.IMonitorRestart;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
@@ -29,7 +25,7 @@ import java.util.stream.IntStream;
 
 public class MaximizeIIC {
 
-    public static void main(String[] args) throws IOException, ContradictionException {
+    public static void main(String[] args) throws IOException {
 
         long t = System.currentTimeMillis();
 
@@ -58,27 +54,6 @@ public class MaximizeIIC {
 
         Map<Integer, List<Solution>> borendySols = new HashMap<>();
         Map<Integer, Integer> borendyFront = new HashMap<>();
-//        borendyFront.put(90, 215132);
-//        borendyFront.put(91,215132);
-//        borendyFront.put(92,215132);
-//        borendyFront.put(93,215132);
-//        borendyFront.put(94,215132);
-//        borendyFront.put(95,215225);
-//        borendyFront.put(96,215225);
-//        borendyFront.put(97,215225);
-//        borendyFront.put(98,215132);
-//        borendyFront.put(99,215225);
-//        borendyFront.put(100,215225);
-//        borendyFront.put(101,215225);
-//        borendyFront.put(102,215225);
-//        borendyFront.put(103,215225);
-//        borendyFront.put(104,215225);
-//        borendyFront.put(105,215225);
-//        borendyFront.put(106,215316);
-//        borendyFront.put(107,215316);
-//        borendyFront.put(108,215316);
-//        borendyFront.put(109,215225);
-//        borendyFront.put(110,215225);
 
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelBorendy.arithm(problemBorendy.minReforestAreaBorendy, "=", a);
@@ -119,27 +94,6 @@ public class MaximizeIIC {
         solverUnia.setSearch(Search.minDomUBSearch(problemUnia.reserveModel.getSites()));
 
         Map<Integer, Integer> uniaFront = new HashMap<>();
-//        uniaFront.put(90,220982);
-//        uniaFront.put(91,220982);
-//        uniaFront.put(92,220990);
-//        uniaFront.put(93,220983);
-//        uniaFront.put(94,220983);
-//        uniaFront.put(95,221064);
-//        uniaFront.put(96,221064);
-//        uniaFront.put(97,221072);
-//        uniaFront.put(98,221092);
-//        uniaFront.put(99,221092);
-//        uniaFront.put(100,221064);
-//        uniaFront.put(101,221071);
-//        uniaFront.put(102,221145);
-//        uniaFront.put(103,221145);
-//        uniaFront.put(104,221278);
-//        uniaFront.put(105,221173);
-//        uniaFront.put(106,221145);
-//        uniaFront.put(107,221278);
-//        uniaFront.put(108,221278);
-//        uniaFront.put(109,221225);
-//        uniaFront.put(110,221361);
 
         for (int a = 90; a <= 110; a++) {
             Constraint area = modelUnia.arithm(problemUnia.minReforestAreaUnia, "=", a);
@@ -293,7 +247,6 @@ public class MaximizeIIC {
         // Export occurrences count
         double[] completeOccurrences = new double[problemBorendy.grid.getNbCols() * problemBorendy.grid.getNbRows()];
         for (int j = 0; j < completeOccurrences.length; j++) {
-//            completeOccurrences[j] = 1.0 * occurrencesInOptimalSolution[j] / nbOptimalSolutions;
             if (problemBorendy.grid.getDiscardSet().contains(j)) {
                 completeOccurrences[j] = 0;
             } else {
