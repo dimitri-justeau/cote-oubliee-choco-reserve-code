@@ -34,7 +34,7 @@ public class MaximizeMESH {
         BaseProblemBorendy problemBorendy = new BaseProblemBorendy("MESH_Borendy");
         Model modelBorendy = problemBorendy.reserveModel.getChocoModel();
         IntVar MESH_Borendy = problemBorendy.reserveModel.effectiveMeshSize(problemBorendy.potentialForest, precision, true);
-        double MESH_initial_Borendy = FragmentationIndices.effectiveMeshSize(problemBorendy.potentialForestGraphVar.getGLB(), problemBorendy.grid.getNbCells());
+        double MESH_initial_Borendy = FragmentationIndices.effectiveMeshSize(problemBorendy.potentialForestGraphVar.getLB(), problemBorendy.grid.getNbCells());
         Solver solverBorendy = problemBorendy.reserveModel.getChocoModel().getSolver();
         solverBorendy.setSearch(Search.minDomUBSearch(problemBorendy.reserveModel.getSites()));
 
@@ -220,6 +220,7 @@ public class MaximizeMESH {
                     problemBorendy.grid,
                     problemBorendy.reserveModel.getChocoModel(),
                     totalReforested,
+                    SetType.BIPARTITESET,
                     SetType.BIPARTITESET
             );
             double totalMesh = FragmentationIndices.effectiveMeshSize(g, problemBorendy.grid.getNbCells());

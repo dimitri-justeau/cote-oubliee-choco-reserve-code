@@ -5,10 +5,10 @@ import chocoreserve.grid.regular.square.PartialRegularSquareGrid;
 import chocoreserve.solver.ReserveModel;
 import chocoreserve.solver.region.ComposedRegion;
 import chocoreserve.solver.region.Region;
-import chocoreserve.solver.variable.SpatialGraphVar;
-import org.chocosolver.graphsolver.GraphModel;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.UndirectedGraphVar;
 import org.chocosolver.util.objects.setDataStructures.SetType;
 
 import java.io.*;
@@ -22,7 +22,7 @@ public class BaseProblemUnia {
     public Data data;
     public String resultsPath;
     public PartialRegularSquareGrid grid;
-    public SpatialGraphVar potentialForestGraphVar;
+    public UndirectedGraphVar potentialForestGraphVar;
     public ReserveModel reserveModel;
 
     public Region nonForest, forest, reforestUnia, reforestBorendy;
@@ -123,9 +123,9 @@ public class BaseProblemUnia {
 
         int nbSites = reserveModel.getSites().length;
 
-        GraphModel model = reserveModel.getChocoModel();
+        Model model = reserveModel.getChocoModel();
 
-        potentialForestGraphVar = potentialForest.getSetVar();
+        potentialForestGraphVar = potentialForest.getGraphVar();
 
         // Connectivity constraints on reforest regions
         reserveModel.nbConnectedComponents(reforestUnia, 1, 1).post();

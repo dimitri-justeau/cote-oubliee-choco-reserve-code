@@ -41,7 +41,7 @@ public class MaximizeIIC {
                 true
         );
         double IIC_initial_Borendy = ConnectivityIndices.getIIC(
-                problemBorendy.potentialForestGraphVar.getGLB(),
+                problemBorendy.potentialForestGraphVar.getLB(),
                 problemBorendy.grid,
                 Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED
         );
@@ -237,6 +237,7 @@ public class MaximizeIIC {
                     problemBorendy.grid,
                     problemBorendy.reserveModel.getChocoModel(),
                     totalReforested,
+                    SetType.BIPARTITESET,
                     SetType.BIPARTITESET
             );
             double totalIIC = ConnectivityIndices.getIIC(g, problemBorendy.grid, Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED);
