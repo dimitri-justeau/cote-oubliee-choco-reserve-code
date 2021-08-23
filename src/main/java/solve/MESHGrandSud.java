@@ -1,17 +1,19 @@
 package solve;
 
+import org.chocosolver.util.objects.setDataStructures.ISet;
+import org.chocosolver.util.objects.setDataStructures.SetFactory;
 import restopt.BaseProblem;
 import restopt.Data;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.BitSet;
 
 public class MESHGrandSud {
 
     public static final String BASEPATH = baseproblem.Data.class.getResource("/data").getPath();
 
     public static void main(String[] args) throws IOException {
-
         int precision = 3;
 //        String forest = Paths.get(BASEPATH, "forest_binary_480x480_0.7_wgs84.tif").toString();
 //        String accessible = Paths.get(BASEPATH, "buffer_1000m_wgs84.tif").toString();

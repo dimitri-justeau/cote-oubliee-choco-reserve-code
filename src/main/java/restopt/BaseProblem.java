@@ -25,6 +25,7 @@ import org.chocosolver.solver.search.strategy.selectors.variables.GeneralizedMin
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.selectors.variables.VariableSelector;
 import org.chocosolver.solver.variables.*;
+import org.chocosolver.solver.variables.impl.UndirectedGraphVarImpl;
 import org.chocosolver.solver.variables.view.graph.UndirectedGraphView;
 import org.chocosolver.util.graphOperations.connectivity.ConnectivityFinder;
 import org.chocosolver.util.objects.graphs.GraphFactory;
@@ -258,7 +259,8 @@ public class BaseProblem {
     }
 
     public void postNbComponentsConstraint(int minNbCC, int maxNbCC) {
-        model.nbConnectedComponents(restoreGraph, model.intVar(minNbCC, maxNbCC)).post();
+//        model.nbConnectedComponents(restoreGraph, model.intVar(minNbCC, maxNbCC)).post();
+        model.connected(restoreGraph).post();
 //        reserveModel.nbConnectedComponents(restore, minNbCC, maxNbCC).post();
     }
 
