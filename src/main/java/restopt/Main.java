@@ -1,5 +1,6 @@
 package restopt;
 
+import org.chocosolver.solver.exception.ContradictionException;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -127,7 +128,14 @@ public class Main {
     )
     int accessibleVal;
 
-    public static void main(String[] args) throws IOException {
+    @CommandLine.Option(
+            names = "-accessibleValue2",
+            description = "If two zones are needed.",
+            defaultValue = "1"
+    )
+    int accessibleVal2;
+
+    public static void main(String[] args) throws IOException, ContradictionException {
 
         Main main = new Main();
         CommandLine cli = new CommandLine(main);
@@ -148,7 +156,12 @@ public class Main {
                 main.restorableBinaryRasterPath
         );
 
-        BaseProblem baseProblem = new BaseProblem(data, main.accessibleVal);
+        BaseProblem baseProblem;
+        if (main.accessibleVal == main.accessibleVal2) {
+            baseProblem = new BaseProblem(data, main.accessibleVal);
+        } else {
+            baseProblem = new BaseProblemTwoRegionsVars(data, main.accessibleVal, main.accessibleVal2);
+        }
         baseProblem.postNbComponentsConstraint(1, main.maxNbCC);
         baseProblem.postCompactnessConstraint(main.maxDiam);
         baseProblem.postRestorableConstraint(main.minRestore, main.maxRestore, main.cellArea, main.minProportion);

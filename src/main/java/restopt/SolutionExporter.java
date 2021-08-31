@@ -56,40 +56,40 @@ public class SolutionExporter {
     }
 
     public void exportCharacteristics(String[][] characteristic) throws IOException {
-//        BufferedWriter br = new BufferedWriter(new FileWriter(csvDest));
-//        StringBuilder sb = new StringBuilder();
-//        for (String[] line : characteristic) {
-//            int i = 0;
-//            for (String s : line) {
-//                i++;
-//                sb.append(s);
-//                if (i < line.length) {
-//                    sb.append(",");
-//                }
-//            }
-//            sb.append("\n");
-//        }
-//        br.write(sb.toString());
-//        br.close();
+        BufferedWriter br = new BufferedWriter(new FileWriter(csvDest));
+        StringBuilder sb = new StringBuilder();
+        for (String[] line : characteristic) {
+            int i = 0;
+            for (String s : line) {
+                i++;
+                sb.append(s);
+                if (i < line.length) {
+                    sb.append(",");
+                }
+            }
+            sb.append("\n");
+        }
+        br.write(sb.toString());
+        br.close();
     }
 
     public void generateRaster() throws IOException {
-//        File file = new File(template);
-//        GeoTiffReader reader = new GeoTiffReader(file);
-//        GridCoverage2D grid = reader.read(null);
-//        int height = grid.getRenderedImage().getHeight();
-//        int width = grid.getRenderedImage().getWidth();
-//
-//        GeoTiffWriter writer = new GeoTiffWriter(new File(rastDest));
-//
-//        DataBuffer buff = grid.getRenderedImage().getData().getDataBuffer();
-//        SampleModel sm = new BandedSampleModel(DataBuffer.TYPE_INT, width, height, 1);
-//        WritableRaster rast = Raster.createWritableRaster(sm, buff, new Point(0,0));
-//        rast.setPixels(0, 0, width, height, completeData);
-//
-//        GridCoverageFactory f = new GridCoverageFactory();
-//        GridCoverage2D destCov = f.create("rast", rast, grid.getEnvelope());
-//
-//        writer.write(destCov,null);
+        File file = new File(template);
+        GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D grid = reader.read(null);
+        int height = grid.getRenderedImage().getHeight();
+        int width = grid.getRenderedImage().getWidth();
+
+        GeoTiffWriter writer = new GeoTiffWriter(new File(rastDest));
+
+        DataBuffer buff = grid.getRenderedImage().getData().getDataBuffer();
+        SampleModel sm = new BandedSampleModel(DataBuffer.TYPE_INT, width, height, 1);
+        WritableRaster rast = Raster.createWritableRaster(sm, buff, new Point(0,0));
+        rast.setPixels(0, 0, width, height, completeData);
+
+        GridCoverageFactory f = new GridCoverageFactory();
+        GridCoverage2D destCov = f.create("rast", rast, grid.getEnvelope());
+
+        writer.write(destCov,null);
     }
 }
