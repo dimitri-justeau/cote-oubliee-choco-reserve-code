@@ -232,6 +232,9 @@ public class BaseProblemTwoRegionsVars extends BaseProblem {
         );
         model.nodesChanneling(restoreGraph2, restoreSet2).post();
 
+        model.disjoint(restoreSet1, restoreSet2).post();
+        model.allDifferent(restoreSet1, restoreSet2).post();
+
 //        bools = model.boolVarArray(accessibleNonHabitatPixels.length);
 //        model.setBoolsChanneling(bools, restoreSet, nCC).post();
     }
@@ -288,6 +291,15 @@ public class BaseProblemTwoRegionsVars extends BaseProblem {
                 )
         ));
         model.post(cons2);
+
+        // Cardinality
+        IntVar c1 = restoreSet1.getCard();
+        IntVar c2 = restoreSet2.getCard();
+        int s = habitatGraph.getMandatoryNodes().size();
+        int maxCard = (int) (maxDiameter * maxDiameter);
+        model.nbNodes(habitatGraph, model.intVar(s, s + 2 * maxCard)).post();
+        model.arithm(c1, "<=", maxCard).post();
+        model.arithm(c2, "<=", maxCard).post();
     }
 
     public void maximizeMESH(int precision, String outputPath, int timeLimit, boolean lns) throws IOException, ContradictionException {
@@ -424,7 +436,7 @@ public class BaseProblemTwoRegionsVars extends BaseProblem {
         exportSolution(outputPath, solution, solCharacteristics);
     }
 
-    public void postRestorableConstraint(int minAreaToRestore, int maxAreaToRestore, int cellArea, double minProportion) {
+    public void postRestorableConstraint(int minAreaToRestore, int maxAreaToRestore, int totalMax, int cellArea, double minProportion) {
         // Minimum area to ensure every site to >= proportion
         assert minProportion >= 0 && minProportion <= 1;
 
@@ -448,6 +460,9 @@ public class BaseProblemTwoRegionsVars extends BaseProblem {
         model.sumElements(restoreSet2, minArea, minRestore2).post();
         model.sumElements(restoreSet2, maxRestorableArea, maxRestorable2).post();
 
+        // Sum
+        model.arithm(minRestore1, "+", minRestore2, "<=", totalMax).post();
+        model.arithm(maxRestorable1, "+", maxRestorable2, ">=", totalMax).post();
     }
 
     public void exportSolution(String exportPath, Solution solution, String[][] characteristics) throws IOException, ContradictionException {

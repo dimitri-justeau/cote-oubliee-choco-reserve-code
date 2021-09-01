@@ -131,9 +131,16 @@ public class Main {
     @CommandLine.Option(
             names = "-accessibleValue2",
             description = "If two zones are needed.",
-            defaultValue = "1"
+            defaultValue = "-1"
     )
     int accessibleVal2;
+
+    @CommandLine.Option(
+            names = "-totalMax",
+            description = "If two zones are needed.",
+            defaultValue = "-1"
+    )
+    int totalMax;
 
     public static void main(String[] args) throws IOException, ContradictionException {
 
@@ -157,14 +164,18 @@ public class Main {
         );
 
         BaseProblem baseProblem;
-        if (main.accessibleVal == main.accessibleVal2) {
+        if (main.accessibleVal2 == -1 || main.accessibleVal2 == main.accessibleVal) {
             baseProblem = new BaseProblem(data, main.accessibleVal);
+            baseProblem.postNbComponentsConstraint(1, main.maxNbCC);
+            baseProblem.postCompactnessConstraint(main.maxDiam);
+            baseProblem.postRestorableConstraint(main.minRestore, main.maxRestore, main.maxRestore, main.cellArea, main.minProportion);
         } else {
-            baseProblem = new BaseProblemTwoRegionsVars(data, main.accessibleVal, main.accessibleVal2);
+            baseProblem = new BaseProblemTwoRegions(data, main.accessibleVal, main.accessibleVal2);
+            baseProblem.postNbComponentsConstraint(1, main.maxNbCC);
+            baseProblem.postCompactnessConstraint(main.maxDiam);
+            int totMax = main.totalMax == -1 ? 2 * main.maxRestore : main.totalMax;
+            baseProblem.postRestorableConstraint(main.minRestore, main.maxRestore, totMax, main.cellArea, main.minProportion);
         }
-        baseProblem.postNbComponentsConstraint(1, main.maxNbCC);
-        baseProblem.postCompactnessConstraint(main.maxDiam);
-        baseProblem.postRestorableConstraint(main.minRestore, main.maxRestore, main.cellArea, main.minProportion);
         if (main.objective == Objective.MESH) {
             baseProblem.maximizeMESH(main.precision, main.outputPath, main.timeLimit, main.lns);
         } else {

@@ -3,35 +3,25 @@ package restopt;
 import chocoreserve.grid.neighborhood.Neighborhoods;
 import chocoreserve.grid.regular.square.PartialRegularSquareGrid;
 import chocoreserve.grid.regular.square.RegularSquareGrid;
-import chocoreserve.solver.ReserveModel;
 import chocoreserve.solver.constraints.choco.PropSmallestEnclosingCircleSpatialGraph;
 import chocoreserve.solver.constraints.choco.connectivity.PropIIC;
 import chocoreserve.solver.constraints.choco.fragmentation.PropEffectiveMeshSize;
-import chocoreserve.solver.region.ComposedRegion;
-import chocoreserve.solver.region.Region;
 import chocoreserve.util.connectivity.ConnectivityIndices;
 import chocoreserve.util.fragmentation.FragmentationIndices;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.graph.connectivity.PropNbCC;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.limits.TimeCounter;
-import org.chocosolver.solver.search.loop.lns.INeighborFactory;
 import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
-import org.chocosolver.solver.search.strategy.selectors.values.SetValueSelector;
-import org.chocosolver.solver.search.strategy.selectors.variables.GeneralizedMinDomVarSelector;
-import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
-import org.chocosolver.solver.search.strategy.selectors.variables.VariableSelector;
-import org.chocosolver.solver.variables.*;
-import org.chocosolver.solver.variables.impl.UndirectedGraphVarImpl;
-import org.chocosolver.solver.variables.view.graph.UndirectedGraphView;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.SetVar;
+import org.chocosolver.solver.variables.UndirectedGraphVar;
 import org.chocosolver.util.graphOperations.connectivity.ConnectivityFinder;
 import org.chocosolver.util.objects.graphs.GraphFactory;
 import org.chocosolver.util.objects.graphs.UndirectedGraph;
-import org.chocosolver.util.objects.setDataStructures.AbstractSet;
 import org.chocosolver.util.objects.setDataStructures.ISet;
 import org.chocosolver.util.objects.setDataStructures.SetFactory;
 import org.chocosolver.util.objects.setDataStructures.SetType;
@@ -44,19 +34,16 @@ import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-public class BaseProblem {
+public class BaseProblemViews extends BaseProblem {
 
     public Data data;
     public PartialRegularSquareGrid grid;
-//    public Region habitat, nonHabitat, restore;
-//    public ComposedRegion potentialHabitat;
-//    public ReserveModel reserveModel;
     public int accessibleVal;
 
-    Model model;
-    UndirectedGraphVar habitatGraph, restoreGraph;
-    UndirectedGraph habGraph;
-    SetVar restoreSet;
+    public Model model;
+    public UndirectedGraphVar habitatGraph, restoreGraph;
+    public UndirectedGraph habGraph;
+    public SetVar restoreSet;
     BoolVar[] bools;
 
     public int nonHabNonAcc;
@@ -70,9 +57,9 @@ public class BaseProblem {
     public IntVar IIC;
     public IntVar nbCC;
 
-    public BaseProblem() {}
+    public BaseProblemViews() {}
 
-    public BaseProblem(Data data, int accessibleVal) {
+    public BaseProblemViews(Data data, int accessibleVal) {
 
         this.data = data;
         this.accessibleVal = accessibleVal;
@@ -178,13 +165,6 @@ public class BaseProblem {
             }
         }
 
-//        habitatGraph = model.nodeInducedGraphVar(
-//                "habitatGraph",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED.getPartialGraph(grid, model, habitatPixels, SetType.BITSET, SetType.BIPARTITESET),
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED.getPartialGraph(grid, model, ArrayUtils.concat(habitatPixels, accessibleNonHabitatPixels), SetType.BITSET, SetType.BIPARTITESET)
-//        );
-//        restoreGraph = model.nodeInducedSubgraphView(habitatGraph, SetFactory.makeConstantSet(habitatPixels), true);
-
         habitatGraph = model.nodeInducedGraphVar(
                 "habitatGraph",
                 hab_LB,
@@ -192,84 +172,10 @@ public class BaseProblem {
         );
         restoreGraph = model.nodeInducedSubgraphView(habitatGraph, SetFactory.makeConstantSet(IntStream.range(0, nCC).toArray()), true);
         restoreSet = model.graphNodeSetView(restoreGraph);
-//        nbCC = model.intVar(0, nCC);
-//        model.nbConnectedComponents(habitatGraph, nbCC).post();
-//        bools = model.setBoolsView(restoreSet, accessibleNonHabitatPixels.length, nCC);
-
-//        restoreSet = model.setVar(new int[] {}, IntStream.range(nCC, accessibleNonHabitatPixels.length + nCC).toArray());
-//        SetVar habitatNodeSet = model.setVar(habitatGraph.getMandatoryNodes().toArray(), habitatGraph.getPotentialNodes().toArray());
-//        model.nodesChanneling(habitatGraph, habitatNodeSet).post();
-//        model.intersection(new SetVar[] {habitatNodeSet, model.setVar(IntStream.range(nCC, accessibleNonHabitatPixels.length + nCC).toArray())}, restoreSet).post();
-//        UndirectedGraph hab_UB2 = GraphFactory.makeStoredUndirectedGraph(model, accessibleNonHabitatPixels.length + nCC, SetType.BIPARTITESET, SetType.BIPARTITESET);
-//        for (int i = 0; i < accessibleNonHabitatPixels.length; i++) {
-//            hab_UB2.addNode(i + nCC);
-//        }
-//        for (int i = 0; i < accessibleNonHabitatPixels.length; i++) {
-//            for (int j : Neighborhoods.PARTIAL_FOUR_CONNECTED.getNeighbors(grid, accessibleNonHabitatPixels[i])) {
-//                if (!habGraph.getNodes().contains(j)) {
-//                    int node = accMap.get(j);
-//                    hab_UB2.addEdge(i + nCC, node + nCC);
-//                }
-//            }
-//        }
-//        restoreGraph = model.nodeInducedGraphVar(
-//                "restoreGraph",
-//                GraphFactory.makeStoredUndirectedGraph(model, accessibleNonHabitatPixels.length + nCC, SetType.BIPARTITESET, SetType.BIPARTITESET),
-//                hab_UB2
-//        );
-//        model.nodesChanneling(restoreGraph, restoreSet).post();
-
-//        bools = model.boolVarArray(accessibleNonHabitatPixels.length);
-//        model.setBoolsChanneling(bools, restoreSet, nCC).post();
-
-//        restoreSet = model.setVar(new int[] {}, accessibleNonHabitatPixels);
-//        restoreGraph = model.nodeInducedGraphVar(
-//                "restoreGraph",
-//                GraphFactory.makeStoredUndirectedGraph(model, grid.getNbCells(), SetType.BITSET, SetType.BIPARTITESET),
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED.getPartialGraph(grid, model, accessibleNonHabitatPixels, SetType.BITSET, SetType.BIPARTITESET)
-//        );
-
-//        habitat = new Region(
-//                "habitat",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-//                SetType.BIPARTITESET,
-//                habitatPixels,
-//                habitatPixels
-//        );
-//        nonHabitat = new Region(
-//                "nonForest",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-//                SetType.BIPARTITESET,
-//                nonHabitatNonAccessiblePixels,
-//                nonHabitatPixels
-//        );
-//
-//        restore = new Region(
-//                "reforest",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-//                SetType.BIPARTITESET,
-//                new int[] {},
-//                accessibleNonHabitatPixels
-//        );
-//
-//        potentialHabitat = new ComposedRegion(
-//                "potentialHabitat",
-//                SetType.BIPARTITESET,
-//                habitat,
-//                restore
-//        );
-//
-//        this.reserveModel = new ReserveModel(
-//                grid,
-//                new Region[] {nonHabitat, habitat, restore},
-//                new ComposedRegion[] {potentialHabitat}
-//        );
     }
 
     public void postNbComponentsConstraint(int minNbCC, int maxNbCC) {
-//        model.nbConnectedComponents(restoreGraph, model.intVar(minNbCC, maxNbCC)).post();
         model.connected(restoreGraph).post();
-//        reserveModel.nbConnectedComponents(restore, minNbCC, maxNbCC).post();
     }
 
     public void postCompactnessConstraint(double maxDiameter) {
@@ -281,7 +187,6 @@ public class BaseProblem {
 
         Constraint cons = new Constraint("maxDiam", new PropSmallestEnclosingCircleSpatialGraph(
                 restoreGraph,
-//                grid.getCartesianCoordinates(),
                 coords,
                 model.realVar("radius", 0, 0.5 * maxDiameter, 1e-5),
                 model.realVar(
@@ -300,11 +205,9 @@ public class BaseProblem {
                 )
         ));
         model.post(cons);
-//        reserveModel.maxDiameterSpatial(restore, maxDiameter).post();
     }
 
-    public void maximizeMESH(int precision, String outputPath, int timeLimit, boolean lns) throws IOException, ContradictionException {
-//        MESH = reserveModel.effectiveMeshSize(potentialHabitat, precision, true);
+    public void initMesh(int precision) {
         MESH = model.intVar(
                 "MESH",
                 0, (int) ((grid.getNbCells() + nonHabNonAcc) * Math.pow(10, precision))
@@ -321,6 +224,10 @@ public class BaseProblem {
                 )
         );
         model.post(meshCons);
+    }
+
+    public void maximizeMESH(int precision, String outputPath, int timeLimit, boolean lns) throws IOException, ContradictionException {
+        initMesh(precision);
         double MESH_initial = FragmentationIndices.effectiveMeshSize(
                 habGraph,
                 (grid.getNbCells() + nonHabNonAcc)
@@ -328,34 +235,7 @@ public class BaseProblem {
         System.out.println("\nMESH initial = " + MESH_initial + "\n");
         Solver solver = model.getSolver();
         solver.showShortStatistics();
-//        solver.showContradiction();
-//        solver.setSearch(Search.minDomUBSearch(reserveModel.getSites()));
-//        solver.setSearch(Search.setVarSearch(new GeneralizedMinDomVarSelector(), new SetDomainMin(), false, restoreSet));
-//        solver.setSearch(Search.minDomUBSearch(bools));
         solver.setSearch(Search.setVarSearch(restoreSet));
-//        solver.setSearch(Search.setVarSearch(
-//                new InputOrder<>(model),
-//                new SetValueSelector() {
-//                    @Override
-//                    public int selectValue(SetVar v) {
-//                        for (int i : v.getLB()) {
-//                            for (int j : Neighborhoods.PARTIAL_FOUR_CONNECTED.getNeighbors(grid, i)) {
-//                                if (!v.getLB().contains(j) && v.getUB().contains(j)) {
-//                                    return j;
-//                                }
-//                            }
-//                        }
-//                        for (int i : v.getUB()) {
-//                            if (!v.getLB().contains(i)) {
-//                                return i;
-//                            }
-//                        }
-//                        throw new UnsupportedOperationException(v + " is already instantiated. Cannot compute a decision on it");
-//                    }
-//                },
-//                false,
-//                restoreSet
-//        ));
         if (lns) {
             if (timeLimit == 0) {
                 throw new InputMismatchException("LNS cannot be used without a time limit, as it breaks completeness " +
@@ -413,12 +293,6 @@ public class BaseProblem {
                 )
         );
         model.post(consIIC);
-//        IIC = reserveModel.integralIndexOfConnectivity(
-//                potentialHabitat,
-//                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
-//                precision,
-//                true
-//        );
         double IIC_initial = ConnectivityIndices.getIIC(
                 habitatGraph.getLB(),
                 grid,
@@ -478,21 +352,6 @@ public class BaseProblem {
             int restorable = data.restorable_area_data[grid.getCompleteIndex(accessibleNonHabitatPixels[i])];
             minArea[i + nCC] = restorable <= threshold ? 0 : restorable - threshold;
         }
-
-//        int[] minArea = new int[grid.getNbCells()];
-//        int[] maxRestorableArea = new int[grid.getNbCells()];
-//        int threshold = (int) Math.ceil(cellArea - cellArea * minProportion);
-//        for (int i = 0; i < grid.getNbCells(); i++) {
-//            maxRestorableArea[i] = data.restorable_area_data[grid.getCompleteIndex(i)];
-//            int restorable = data.restorable_area_data[grid.getCompleteIndex(i)];
-//            minArea[i] = restorable <= threshold ? 0 : restorable - threshold;
-//        }
-
-        // Post restorable area constraint
-//        minRestore = reserveModel.getChocoModel().intVar(minAreaToRestore, maxAreaToRestore);
-//        maxRestorable = reserveModel.getChocoModel().intVar(0, maxAreaToRestore * cellArea);
-//        reserveModel.getChocoModel().sumElements(restore.getSetVar(), minArea, minRestore).post();
-//        reserveModel.getChocoModel().sumElements(restore.getSetVar(), maxRestorableArea, maxRestorable).post();
 
         minRestore = model.intVar(minAreaToRestore, maxAreaToRestore);
         maxRestorable = model.intVar(0, maxAreaToRestore * cellArea);

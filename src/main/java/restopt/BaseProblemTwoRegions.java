@@ -39,9 +39,6 @@ public class BaseProblemTwoRegions extends BaseProblem {
 
     public Data data;
     public PartialRegularSquareGrid grid;
-//    public Region habitat, nonHabitat, restore;
-//    public ComposedRegion potentialHabitat;
-//    public ReserveModel reserveModel;
     public int accessibleVal1, accessibleVal2;
 
     Model model;
@@ -146,14 +143,6 @@ public class BaseProblemTwoRegions extends BaseProblem {
             accMap.put(accessibleNonHabitatPixels[i], i);
         }
 
-//        for (int i = 0; i < accessibleNonHabitatPixels1.length; i++) {
-//            accMap.put(accessibleNonHabitatPixels1[i], i);
-//        }
-//
-//        for (int i = 0; i < accessibleNonHabitatPixels2.length; i++) {
-//            accMap.put(accessibleNonHabitatPixels2[i], i);
-//        }
-
         sizeCells = new int[accessibleNonHabitatPixels.length + nCC];
         for (int i = 0; i < nCC; i++) {
             sizeCells[i] = cFinder.getSizeCC()[i];
@@ -190,21 +179,11 @@ public class BaseProblemTwoRegions extends BaseProblem {
             }
         }
 
-//        habitatGraph = model.nodeInducedGraphVar(
-//                "habitatGraph",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED.getPartialGraph(grid, model, habitatPixels, SetType.BITSET, SetType.BIPARTITESET),
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED.getPartialGraph(grid, model, ArrayUtils.concat(habitatPixels, accessibleNonHabitatPixels), SetType.BITSET, SetType.BIPARTITESET)
-//        );
-//        restoreGraph = model.nodeInducedSubgraphView(habitatGraph, SetFactory.makeConstantSet(habitatPixels), true);
-
         habitatGraph = model.nodeInducedGraphVar(
                 "habitatGraph",
                 hab_LB,
                 hab_UB
         );
-//        ISet exclude = SetFactory.makeConstantSet(IntStream.range(0, nCC).toArray());
-//        restoreGraph = model.nodeInducedSubgraphView(habitatGraph, exclude, true);
-//        restoreSet = model.graphNodeSetView(restoreGraph1);
 
         ISet exclude1 = SetFactory.makeConstantSet(ArrayUtils.concat(IntStream.range(0, nCC).toArray(), Arrays.stream(accessibleNonHabitatPixels2).map(i -> accMap.get(i) + nCC).toArray()));
         ISet exclude2 = SetFactory.makeConstantSet(ArrayUtils.concat(IntStream.range(0, nCC).toArray(), Arrays.stream(accessibleNonHabitatPixels1).map(i -> accMap.get(i) + nCC).toArray()));
@@ -215,85 +194,13 @@ public class BaseProblemTwoRegions extends BaseProblem {
         restoreGraph2 = model.nodeInducedSubgraphView(habitatGraph, exclude2, true);
         restoreSet2 = model.graphNodeSetView(restoreGraph2);
 
-//        nbCC = model.intVar(0, nCC);
-//        model.nbConnectedComponents(habitatGraph, nbCC).post();
-//        bools = model.setBoolsView(restoreSet, accessibleNonHabitatPixels.length, nCC);
-
-//        restoreSet = model.setVar(new int[] {}, IntStream.range(nCC, accessibleNonHabitatPixels.length + nCC).toArray());
-//        SetVar habitatNodeSet = model.setVar(habitatGraph.getMandatoryNodes().toArray(), habitatGraph.getPotentialNodes().toArray());
-//        model.nodesChanneling(habitatGraph, habitatNodeSet).post();
-//        model.intersection(new SetVar[] {habitatNodeSet, model.setVar(IntStream.range(nCC, accessibleNonHabitatPixels.length + nCC).toArray())}, restoreSet).post();
-//        UndirectedGraph hab_UB2 = GraphFactory.makeStoredUndirectedGraph(model, accessibleNonHabitatPixels.length + nCC, SetType.BIPARTITESET, SetType.BIPARTITESET);
-//        for (int i = 0; i < accessibleNonHabitatPixels.length; i++) {
-//            hab_UB2.addNode(i + nCC);
-//        }
-//        for (int i = 0; i < accessibleNonHabitatPixels.length; i++) {
-//            for (int j : Neighborhoods.PARTIAL_FOUR_CONNECTED.getNeighbors(grid, accessibleNonHabitatPixels[i])) {
-//                if (!habGraph.getNodes().contains(j)) {
-//                    int node = accMap.get(j);
-//                    hab_UB2.addEdge(i + nCC, node + nCC);
-//                }
-//            }
-//        }
-//        restoreGraph = model.nodeInducedGraphVar(
-//                "restoreGraph",
-//                GraphFactory.makeStoredUndirectedGraph(model, accessibleNonHabitatPixels.length + nCC, SetType.BIPARTITESET, SetType.BIPARTITESET),
-//                hab_UB2
-//        );
-//        model.nodesChanneling(restoreGraph, restoreSet).post();
-
-//        bools = model.boolVarArray(accessibleNonHabitatPixels.length);
-//        model.setBoolsChanneling(bools, restoreSet, nCC).post();
-
-//        restoreSet = model.setVar(new int[] {}, accessibleNonHabitatPixels);
-//        restoreGraph = model.nodeInducedGraphVar(
-//                "restoreGraph",
-//                GraphFactory.makeStoredUndirectedGraph(model, grid.getNbCells(), SetType.BITSET, SetType.BIPARTITESET),
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED.getPartialGraph(grid, model, accessibleNonHabitatPixels, SetType.BITSET, SetType.BIPARTITESET)
-//        );
-
-//        habitat = new Region(
-//                "habitat",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-//                SetType.BIPARTITESET,
-//                habitatPixels,
-//                habitatPixels
-//        );
-//        nonHabitat = new Region(
-//                "nonForest",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-//                SetType.BIPARTITESET,
-//                nonHabitatNonAccessiblePixels,
-//                nonHabitatPixels
-//        );
-//
-//        restore = new Region(
-//                "reforest",
-//                Neighborhoods.PARTIAL_FOUR_CONNECTED,
-//                SetType.BIPARTITESET,
-//                new int[] {},
-//                accessibleNonHabitatPixels
-//        );
-//
-//        potentialHabitat = new ComposedRegion(
-//                "potentialHabitat",
-//                SetType.BIPARTITESET,
-//                habitat,
-//                restore
-//        );
-//
-//        this.reserveModel = new ReserveModel(
-//                grid,
-//                new Region[] {nonHabitat, habitat, restore},
-//                new ComposedRegion[] {potentialHabitat}
-//        );
+        model.disjoint(restoreSet1, restoreSet2).post();
+        model.allDifferent(restoreSet1, restoreSet2).post();
     }
 
     public void postNbComponentsConstraint(int minNbCC, int maxNbCC) {
-//        model.nbConnectedComponents(restoreGraph, model.intVar(minNbCC, maxNbCC)).post();
         model.connected(restoreGraph1).post();
         model.connected(restoreGraph2).post();
-//        reserveModel.nbConnectedComponents(restore, minNbCC, maxNbCC).post();
     }
 
     public void postCompactnessConstraint(double maxDiameter) {
@@ -327,7 +234,6 @@ public class BaseProblemTwoRegions extends BaseProblem {
         // Zone 2
         Constraint cons2 = new Constraint("maxDiam2", new PropSmallestEnclosingCircleSpatialGraph(
                 restoreGraph2,
-//                grid.getCartesianCoordinates(),
                 coords,
                 model.realVar("radius", 0, 0.5 * maxDiameter, 1e-5),
                 model.realVar(
@@ -346,11 +252,18 @@ public class BaseProblemTwoRegions extends BaseProblem {
                 )
         ));
         model.post(cons2);
-//        reserveModel.maxDiameterSpatial(restore, maxDiameter).post();
+
+        // Cardinality
+        IntVar c1 = restoreSet1.getCard();
+        IntVar c2 = restoreSet2.getCard();
+        int s = habitatGraph.getMandatoryNodes().size();
+        int maxCard = (int) (maxDiameter * maxDiameter);
+        model.nbNodes(habitatGraph, model.intVar(s, s + 2 * maxCard)).post();
+        model.arithm(c1, "<=", maxCard).post();
+        model.arithm(c2, "<=", maxCard).post();
     }
 
     public void maximizeMESH(int precision, String outputPath, int timeLimit, boolean lns) throws IOException, ContradictionException {
-//        MESH = reserveModel.effectiveMeshSize(potentialHabitat, precision, true);
         MESH = model.intVar(
                 "MESH",
                 0, (int) ((grid.getNbCells() + nonHabNonAcc) * Math.pow(10, precision))
@@ -379,30 +292,6 @@ public class BaseProblemTwoRegions extends BaseProblem {
 //        solver.setSearch(Search.setVarSearch(new GeneralizedMinDomVarSelector(), new SetDomainMin(), false, restoreSet));
 //        solver.setSearch(Search.minDomUBSearch(bools));
         solver.setSearch(Search.setVarSearch(restoreSet1, restoreSet2));
-//        solver.setSearch(Search.setVarSearch(restoreSet1, restoreSet2));
-//        solver.setSearch(Search.setVarSearch(
-//                new InputOrder<>(model),
-//                new SetValueSelector() {
-//                    @Override
-//                    public int selectValue(SetVar v) {
-//                        for (int i : v.getLB()) {
-//                            for (int j : Neighborhoods.PARTIAL_FOUR_CONNECTED.getNeighbors(grid, i)) {
-//                                if (!v.getLB().contains(j) && v.getUB().contains(j)) {
-//                                    return j;
-//                                }
-//                            }
-//                        }
-//                        for (int i : v.getUB()) {
-//                            if (!v.getLB().contains(i)) {
-//                                return i;
-//                            }
-//                        }
-//                        throw new UnsupportedOperationException(v + " is already instantiated. Cannot compute a decision on it");
-//                    }
-//                },
-//                false,
-//                restoreSet
-//        ));
         if (lns) {
             if (timeLimit == 0) {
                 throw new InputMismatchException("LNS cannot be used without a time limit, as it breaks completeness " +
@@ -460,12 +349,6 @@ public class BaseProblemTwoRegions extends BaseProblem {
                 )
         );
         model.post(consIIC);
-//        IIC = reserveModel.integralIndexOfConnectivity(
-//                potentialHabitat,
-//                Neighborhoods.PARTIAL_TWO_WIDE_FOUR_CONNECTED,
-//                precision,
-//                true
-//        );
         double IIC_initial = ConnectivityIndices.getIIC(
                 habitatGraph.getLB(),
                 grid,
@@ -513,7 +396,7 @@ public class BaseProblemTwoRegions extends BaseProblem {
         exportSolution(outputPath, solution, solCharacteristics);
     }
 
-    public void postRestorableConstraint(int minAreaToRestore, int maxAreaToRestore, int cellArea, double minProportion) {
+    public void postRestorableConstraint(int minAreaToRestore, int maxAreaToRestore, int totalMax, int cellArea, double minProportion) {
         // Minimum area to ensure every site to >= proportion
         assert minProportion >= 0 && minProportion <= 1;
 
@@ -537,6 +420,9 @@ public class BaseProblemTwoRegions extends BaseProblem {
         model.sumElements(restoreSet2, minArea, minRestore2).post();
         model.sumElements(restoreSet2, maxRestorableArea, maxRestorable2).post();
 
+        // Sum
+        model.arithm(minRestore1, "+", minRestore2, "<=", totalMax).post();
+        model.arithm(maxRestorable1, "+", maxRestorable2, ">=", totalMax).post();
     }
 
     public void exportSolution(String exportPath, Solution solution, String[][] characteristics) throws IOException, ContradictionException {

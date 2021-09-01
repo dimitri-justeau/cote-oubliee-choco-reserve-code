@@ -26,12 +26,13 @@ public class MESHGrandSud {
 //        String accessible = Paths.get(BASEPATH, "accessible_300m_buffer_roads.tif").toString();
 //        String restorable = Paths.get(BASEPATH, "restorable.tif").toString();
 //        BaseProblem baseProblem = new BaseProblem(new Data(forest, accessible, restorable), 2);
-        BaseProblemTwoRegionsVars baseProblem = new BaseProblemTwoRegionsVars(new Data(forest, accessible, restorable), 1, 2);
-//        BaseProblemTwoRegions baseProblem = new BaseProblemTwoRegions(new Data(forest, accessible, restorable), 1, 2);
+//        BaseProblemTwoRegionsVars baseProblem = new BaseProblemTwoRegionsVars(new Data(forest, accessible, restorable), 1, 2);
+        BaseProblemTwoRegions baseProblem = new BaseProblemTwoRegions(new Data(forest, accessible, restorable), 1, 2);
         baseProblem.postNbComponentsConstraint(1, 1);
         baseProblem.postCompactnessConstraint(6);
 //        baseProblem.postRestorableConstraint(0, 20000, 817, 0.7);
-        baseProblem.postRestorableConstraint(90, 110, 23, 0.7);
+        baseProblem.postRestorableConstraint(90, 110, 200, 23, 0.7);
+//        baseProblem.postRestorableConstraint(90, 110, 23, 0.7);
         baseProblem.maximizeMESH(precision, "/home/djusteau/Documents/Rapport RELIQUES 2021/result", 60, false);
     }
 }
